@@ -1006,5 +1006,25 @@ function handleFileImport(e) {
             return "Dispensa & Colazione";
         }
     </script>
+    function clearPendingList() {
+    if (!confirm("Sei sicuro di voler svuotare la lista?")) return;
+
+    // Invia la rimozione al database Firebase della stanza attiva
+    if (typeof currentRoomId !== 'undefined' && currentRoomId) {
+        database.ref('rooms/' + currentRoomId + '/items').remove()
+            .then(() => {
+                console.log("Lista pulita anche su Firebase");
+            })
+            .catch((error) => {
+                console.error("Errore pulizia Firebase:", error);
+            });
+    }
+
+    // Pulisci la vista locale dello schermo
+    localItems = [];
+    if (typeof renderShoppingList === 'function') {
+        renderShoppingList();
+    }
+}
 </body>
 </html>
