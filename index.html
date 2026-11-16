@@ -65,8 +65,8 @@
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-200">
                         <i class="fa-solid fa-location-dot text-xs"></i>
                     </span>
-                    <input type="text" id="comuneInput" placeholder="Inserisci Comune (es. Roma, Milano...)" 
-                           class="w-full md:w-52 pl-8 pr-3 py-1.5 bg-emerald-800/60 border border-emerald-500/40 rounded-xl text-xs text-white placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    <input type="text" id="comuneInput" placeholder="Inserisci Comune..." 
+                           class="w-full md:w-44 pl-8 pr-3 py-1.5 bg-emerald-800/60 border border-emerald-500/40 rounded-xl text-xs text-white placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-white/50"
                            onchange="updateComune(this.value)">
                 </div>
                 <button onclick="openSyncModal()" class="hidden md:flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition">
@@ -82,20 +82,47 @@
     <!-- Contenuto Principale -->
     <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- Podio Top 3 Supermercati -->
-        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
-                    <i class="fa-solid fa-trophy text-amber-500"></i> Migliori Supermercati per la tua spesa
-                </h2>
-                <span class="text-[11px] text-emerald-600 font-bold" id="comuneDisplayLabel">Comune: Roma</span>
+        <!-- Sezione Podio Top 3 + Elenco Verticale Raggio km -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Podio Top 3 (2 Colonne su Desktop) -->
+            <div class="md:col-span-2 bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-trophy text-amber-500"></i> Podio Top 3 Supermercati
+                        </h2>
+                        <span class="text-[11px] text-emerald-600 font-bold" id="comuneDisplayLabel">Roma</span>
+                    </div>
+                    <div id="podiumContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <!-- Generato da JS -->
+                    </div>
+                </div>
+                <!-- Supermercato Selezionato dalla lista laterale -->
+                <div id="selectedMarketDetails" class="mt-4 pt-3 border-t border-slate-100 hidden">
+                    <!-- Generato da JS -->
+                </div>
             </div>
-            <div id="podiumContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <!-- Generato da JS -->
+
+            <!-- Finestra Verticale Elenco Supermercati con Raggio km -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-store text-emerald-600"></i> Nel raggio
+                    </h2>
+                    <select id="radiusSelect" onchange="renderMarketsList()" class="bg-slate-100 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg border border-slate-200 focus:outline-none">
+                        <option value="5">5 km</option>
+                        <option value="10" selected>10 km</option>
+                        <option value="20">20 km</option>
+                    </select>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-2">Clicca su un negozio per calcolare il costo esatto:</p>
+                <div id="marketsVerticalList" class="space-y-2 overflow-y-auto max-h-48 pr-1">
+                    <!-- Generato da JS -->
+                </div>
             </div>
         </section>
 
-        <!-- Barra Strumenti Lista (Ricerca, Filtri, Import/Export e Pulizia) -->
+        <!-- Barra Strumenti Lista (Ricerca, Aggiungi, Excel) -->
         <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-3 items-center justify-between">
             <div class="relative w-full md:w-64">
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -108,10 +135,7 @@
             
             <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
                 <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
-                    <i class="fa-solid fa-plus"></i> Aggiungi
-                </button>
-                <button onclick="clearUncheckedItems()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Elimina tutti i prodotti non spuntati">
-                    <i class="fa-solid fa-broom text-rose-500"></i> Pulisci non spuntati
+                    <i class="fa-solid fa-plus"></i> Aggiungi Prodotto
                 </button>
                 <button onclick="downloadExcelTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Scarica modello Excel">
                     <i class="fa-solid fa-file-arrow-down text-emerald-600"></i> Modello Excel
@@ -123,9 +147,46 @@
             </div>
         </section>
 
-        <!-- Reparti e Prodotti (Accordion per Macrogruppo) -->
-        <section id="macroGroupsContainer" class="space-y-4">
-            <!-- Generato dinamicamente da JS -->
+        <!-- Sezione 1: Lista della Spesa (Non ancora acquistati) -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-3.5 bg-slate-50/80 flex justify-between items-center border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xs text-slate-800">Da Acquistare (Lista)</h3>
+                        <p class="text-[10px] text-slate-400" id="pendingCountLabel">0 prodotti</p>
+                    </div>
+                </div>
+                <button onclick="clearPendingList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-trash-can text-rose-500"></i> Pulisci Lista
+                </button>
+            </div>
+            <div id="pendingItemsContainer" class="p-2 space-y-2">
+                <!-- Generato da JS -->
+            </div>
+        </section>
+
+        <!-- Sezione 2: Nel Carrello (Acquistati) -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-3.5 bg-slate-50/80 flex justify-between items-center border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xs text-slate-800">Nel Carrello</h3>
+                        <p class="text-[10px] text-slate-400" id="cartCountLabel">0 prodotti</p>
+                    </div>
+                </div>
+                <button onclick="clearCartList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-trash-can text-rose-500"></i> Pulisci Carrello
+                </button>
+            </div>
+            <div id="cartItemsContainer" class="p-2 space-y-2">
+                <!-- Generato da JS -->
+            </div>
         </section>
 
     </main>
@@ -137,20 +198,15 @@
                 <p class="text-[11px] text-slate-400 uppercase font-bold">Totale Stimato (Miglior Insegna)</p>
                 <p class="text-lg font-extrabold text-emerald-600" id="footerTotalAmount">€ 0,00</p>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleAllAccordions(true)" class="text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl font-medium transition">
-                    Espandi Tutti
-                </button>
-                <button onclick="toggleAllAccordions(false)" class="text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl font-medium transition">
-                    Comprimi Tutti
-                </button>
+            <div class="text-xs text-slate-500 font-medium">
+                Gestione Spesa Condivisa Famiglia
             </div>
         </div>
     </div>
 
     <!-- Modale Modifica Quantità / Peso -->
     <div id="qtyModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-sm text-slate-800" id="modalItemTitle">Modifica Quantità</h3>
                 <button onclick="closeQtyModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -174,13 +230,9 @@
                 <div>
                     <label class="text-xs font-semibold text-slate-500 mb-1 block">Unità di Misura</label>
                     <select id="modalUnitSelect" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <!-- Popolato dinamicamente -->
                     </select>
                 </div>
-                <!-- Pulsanti rapidi -->
-                <div id="modalQuickButtons" class="flex gap-1.5 flex-wrap pt-1">
-                    <!-- Popolato dinamicamente -->
-                </div>
+                <div id="modalQuickButtons" class="flex gap-1.5 flex-wrap pt-1"></div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closeQtyModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">Annulla</button>
@@ -203,9 +255,14 @@
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-xs font-semibold text-slate-500 mb-1 block">Reparto / Macro</label>
+                        <label class="text-xs font-semibold text-slate-500 mb-1 block">Reparto</label>
                         <select id="addCategorySelect" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none">
-                            <!-- Popolato da JS -->
+                            <option value="Dispensa & Colazione">Dispensa & Colazione</option>
+                            <option value="Frigo & Latticini">Frigo & Latticini</option>
+                            <option value="Ortofrutta">Ortofrutta</option>
+                            <option value="Carne & Pesce">Carne & Pesce</option>
+                            <option value="Bevande">Bevande</option>
+                            <option value="Casa & Igiene">Casa & Igiene</option>
                         </select>
                     </div>
                     <div>
@@ -243,13 +300,7 @@
                 <p class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check"></i> Sincronizzazione in tempo reale
                 </p>
-                <p class="text-[11px] text-emerald-700">Configura lo stesso codice o URL Firebase sul telefono e sul PC per condividere la lista con tua moglie!</p>
-            </div>
-            <div class="space-y-2 text-xs text-slate-600 text-left bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <p class="font-bold text-slate-700 mb-1"><i class="fa-brands fa-apple"></i> Su iPhone (Safari):</p>
-                <p>Tocca l'icona <b>Condividi</b> <i class="fa-solid fa-arrow-up-from-bracket"></i> e poi <b>"Aggiungi alla schermata Home"</b>.</p>
-                <p class="font-bold text-slate-700 mt-2 mb-1"><i class="fa-brands fa-android"></i> Su Android (Chrome):</p>
-                <p>Tocca i tre puntini <i class="fa-solid fa-ellipsis-vertical"></i> e seleziona <b>"Aggiungi a schermata Home"</b>.</p>
+                <p class="text-[11px] text-emerald-700">Configura lo stesso codice o URL Firebase sul telefono e sul PC per condividere la lista!</p>
             </div>
             <button onclick="closeMobileExportModal()" class="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow">Ho capito</button>
         </div>
@@ -262,15 +313,15 @@
                 <h3 class="font-bold text-sm text-slate-800">Sincronizzazione Cloud (Famiglia)</h3>
                 <button onclick="closeSyncModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <p class="text-xs text-slate-500">Collega un database Firebase gratuito per sincronizzare la spesa in tempo reale con tua moglie tra PC e smartphone.</p>
+            <p class="text-xs text-slate-500">Inserisci l'URL del tuo database Firebase Realtime e la stanza condivisa.</p>
             <div class="space-y-3">
                 <div>
-                    <label class="text-xs font-semibold text-slate-500 mb-1 block">URL Realtime Database Firebase</label>
-                    <input type="text" id="firebaseUrlInput" placeholder="https://tuo-progetto-default-rtdb.europe-west1.firebasedatabase.app" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <label class="text-xs font-semibold text-slate-500 mb-1 block">URL Firebase Database</label>
+                    <input type="text" id="firebaseUrlInput" placeholder="https://tuo-db.firebasedatabase.app" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none">
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-slate-500 mb-1 block">Codice Famiglia / Stanza</label>
-                    <input type="text" id="familyRoomInput" value="famiglia-rossi" placeholder="es. famiglia-rossi" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="text" id="familyRoomInput" value="famiglia-rossi" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-700 focus:outline-none">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
@@ -281,9 +332,8 @@
     </div>
 
     <script>
-        // --- CONFIGURAZIONE SUPERMERCATI CON FILTRO GEOGRAFICO ---
+        // --- CONFIGURAZIONE SUPERMERCATI ---
         const ALL_SUPERMARKETS = [
-            // Nazionali / Diffusi ovunque
             { id: "eurospin", name: "Eurospin", type: "discount", index: 0.85, color: "emerald", url: "https://www.eurospin.it/volantino/", zones: ["nord", "centro", "sud", "isole"] },
             { id: "lidl", name: "Lidl", type: "discount", index: 0.88, color: "blue", url: "https://www.lidl.it/volantini", zones: ["nord", "centro", "sud", "isole"] },
             { id: "conad", name: "Conad", type: "superstore", index: 1.05, color: "red", url: "https://www.conad.it/volantini", zones: ["nord", "centro", "sud", "isole"] },
@@ -294,116 +344,69 @@
             { id: "md", name: "MD Spa", type: "discount", index: 0.87, color: "amber", url: "https://www.mdspa.it/volantino", zones: ["centro", "sud", "isole", "nord"] },
             { id: "despar", name: "Despar", type: "superstore", index: 1.05, color: "emerald", url: "https://www.despar.it/it/volantini/", zones: ["nord", "centro", "sud"] },
             { id: "pam", name: "Pam", type: "superstore", index: 1.03, color: "red", url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"] },
-            
-            // Specifici Centro / Roma / Lazio
             { id: "todis", name: "Todis", type: "discount", index: 0.89, color: "red", url: "https://www.todis.it/volantino/", zones: ["centro", "sud"] },
             { id: "ma", name: "MA Supermercati", type: "supermarket", index: 0.90, color: "blue", url: "https://www.masupermercati.it/", zones: ["centro"] },
             { id: "iperdem", name: "IperDem", type: "supermarket", index: 0.92, color: "blue", url: "https://www.iperdem.it/", zones: ["centro"] },
             { id: "castoro", name: "Il Castoro", type: "supermarket", index: 0.95, color: "orange", url: "https://www.spesilcastoro.it/", zones: ["centro"] },
             { id: "tigre", name: "Tigre", type: "supermarket", index: 1.01, color: "orange", url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"] },
-            { id: "crai", name: "Crai", type: "supermarket", index: 1.08, color: "red", url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"] },
-            { id: "ipercoop", name: "Ipercoop", type: "iperm", index: 1.04, color: "red", url: "https://www.e-coop.it/", zones: ["nord", "centro"] }
+            { id: "crai", name: "Crai", type: "supermarket", index: 1.08, color: "red", url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"] }
         ];
 
-        // Funzione per determinare la zona geografica in base al comune inserito
-        function getZoneByComune(comune) {
-            const c = comune.toLowerCase().trim();
-            const nord = ["milano", "torino", "venezia", "bologna", "genova", "firenze", "verona", "padova", "brescia", "parma", "trieste", "bergamo", "monza"];
-            const sud = ["napoli", "bari", "palermo", "catania", "messina", "taranto", "reggio calabria", "foggia", "salerno", "lecce", "cagliari", "sassari"];
-            
-            if (nord.some(city => c.includes(city))) return "nord";
-            if (sud.some(city => c.includes(city))) return "sud";
-            // Default di fallback (Roma e centro Italia)
-            return "centro";
-        }
-
-        // Restituisce i supermercati attivi filtrati per zona
-        function getActiveSupermarkets() {
-            const zone = getZoneByComune(appState.comune);
-            return ALL_SUPERMARKETS.filter(m => m.zones.includes(zone));
-        }
-
-        // Listino prezzi base realistici
         const BASE_PRICES = {
-            "Pasta di semola 500g": { base: 0.95, unit: "conf", refUnit: "conf" },
-            "Passata di pomodoro 700g": { base: 1.15, unit: "conf", refUnit: "conf" },
-            "Olio Extravergine d'Oliva 1L": { base: 8.90, unit: "L", refUnit: "L" },
-            "Latte intero 1L": { base: 1.29, unit: "L", refUnit: "L" },
-            "Acqua naturale 1.5L (pack 6)": { base: 1.95, unit: "conf", refUnit: "conf" },
-            "Petto di pollo fresco": { base: 8.90, unit: "kg", refUnit: "kg" },
-            "Carne macinata mista": { base: 7.50, unit: "kg", refUnit: "kg" },
-            "Mozzarella di bufala 125g": { base: 1.49, unit: "pz", refUnit: "pz" },
-            "Parmigiano Reggiano 250g": { base: 4.50, unit: "conf", refUnit: "conf" },
-            "Mele Golden (sfuse)": { base: 2.19, unit: "kg", refUnit: "kg" },
-            "Banane": { base: 1.69, unit: "kg", refUnit: "kg" },
-            "Detersivo lavatrice liquido": { base: 3.80, unit: "pz", refUnit: "pz" },
-            "Carta igienica (confezione 4 rotoli)": { base: 1.90, unit: "conf", refUnit: "conf" }
+            "Pasta di semola 500g": { base: 0.95, unit: "conf" },
+            "Passata di pomodoro 700g": { base: 1.15, unit: "conf" },
+            "Olio Extravergine d'Oliva 1L": { base: 8.90, unit: "L" },
+            "Latte intero 1L": { base: 1.29, unit: "L" },
+            "Acqua naturale 1.5L (pack 6)": { base: 1.95, unit: "conf" },
+            "Petto di pollo fresco": { base: 8.90, unit: "kg" },
+            "Carne macinata mista": { base: 7.50, unit: "kg" },
+            "Mozzarella di bufala 125g": { base: 1.49, unit: "pz" },
+            "Parmigiano Reggiano 250g": { base: 4.50, unit: "conf" },
+            "Mele Golden (sfuse)": { base: 2.19, unit: "kg" },
+            "Banane": { base: 1.69, unit: "kg" },
+            "Detersivo lavatrice liquido": { base: 3.80, unit: "pz" },
+            "Carta igienica (confezione 4 rotoli)": { base: 1.90, unit: "conf" }
         };
 
-        const MACRO_CATEGORIES = {
-            "Dispensa & Colazione": { icon: "fa-wheat-awn", color: "amber", items: [
-                { id: "1", name: "Pasta di semola 500g", qty: 2, unit: "conf", checked: false },
-                { id: "2", name: "Passata di pomodoro 700g", qty: 2, unit: "conf", checked: false },
-                { id: "3", name: "Olio Extravergine d'Oliva 1L", qty: 1, unit: "L", checked: false }
-            ]},
-            "Frigo & Latticini": { icon: "fa-cheese", color: "blue", items: [
-                { id: "4", name: "Latte intero 1L", qty: 2, unit: "L", checked: false },
-                { id: "5", name: "Mozzarella di bufala 125g", qty: 3, unit: "pz", checked: false },
-                { id: "6", name: "Parmigiano Reggiano 250g", qty: 1, unit: "conf", checked: false }
-            ]},
-            "Ortofrutta": { icon: "fa-carrot", color: "emerald", items: [
-                { id: "7", name: "Mele Golden (sfuse)", qty: 1.5, unit: "kg", checked: false },
-                { id: "8", name: "Banane", qty: 1, unit: "kg", checked: false }
-            ]},
-            "Carne & Pesce": { icon: "fa-drumstick-bite", color: "red", items: [
-                { id: "9", name: "Petto di pollo fresco", qty: 0.6, unit: "kg", checked: false },
-                { id: "10", name: "Carne macinata mista", qty: 0.5, unit: "kg", checked: false }
-            ]},
-            "Bevande": { icon: "fa-bottle-water", color: "cyan", items: [
-                { id: "11", name: "Acqua naturale 1.5L (pack 6)", qty: 2, unit: "conf", checked: false }
-            ]},
-            "Casa & Igiene": { icon: "fa-pump-soap", color: "violet", items: [
-                { id: "12", name: "Detersivo lavatrice liquido", qty: 1, unit: "pz", checked: false },
-                { id: "13", name: "Carta igienica (confezione 4 rotoli)", qty: 1, unit: "conf", checked: false }
-            ]}
-        };
+        const INITIAL_ITEMS = [
+            { id: "1", name: "Pasta di semola 500g", qty: 2, unit: "conf", category: "Dispensa & Colazione", checked: false },
+            { id: "2", name: "Passata di pomodoro 700g", qty: 2, unit: "conf", category: "Dispensa & Colazione", checked: false },
+            { id: "3", name: "Olio Extravergine d'Oliva 1L", qty: 1, unit: "L", category: "Dispensa & Colazione", checked: false },
+            { id: "4", name: "Latte intero 1L", qty: 2, unit: "L", category: "Frigo & Latticini", checked: false },
+            { id: "5", name: "Mozzarella di bufala 125g", qty: 3, unit: "pz", category: "Frigo & Latticini", checked: false },
+            { id: "6", name: "Mele Golden (sfuse)", qty: 1.5, unit: "kg", category: "Ortofrutta", checked: false },
+            { id: "7", name: "Petto di pollo fresco", qty: 0.6, unit: "kg", category: "Carne & Pesce", checked: false },
+            { id: "8", name: "Acqua naturale 1.5L (pack 6)", qty: 2, unit: "conf", category: "Bevande", checked: false }
+        ];
 
         let appState = {
             comune: "Roma",
             searchQuery: "",
-            expandedCategories: {
-                "Dispensa & Colazione": true,
-                "Frigo & Latticini": true,
-                "Ortofrutta": true,
-                "Carne & Pesce": true,
-                "Bevande": true,
-                "Casa & Igiene": true
-            },
-            categories: MACRO_CATEGORIES
+            selectedMarketId: null,
+            items: INITIAL_ITEMS
         };
 
-        let activeQtyEdit = { categoryKey: null, itemId: null };
+        let activeQtyEdit = null;
         let firebaseRef = null;
         let isSyncing = false;
 
-        // --- INIZIALIZZAZIONE ---
         window.addEventListener('DOMContentLoaded', () => {
             loadLocalState();
             document.getElementById('comuneInput').value = appState.comune;
-            document.getElementById('comuneDisplayLabel').innerText = `Comune: ${appState.comune}`;
+            document.getElementById('comuneDisplayLabel').innerText = appState.comune;
             renderApp();
             checkAutoFirebase();
         });
 
         function saveLocalState() {
-            localStorage.setItem('spesaSmartState', JSON.stringify(appState));
+            localStorage.setItem('spesaSmartStateV2', JSON.stringify(appState));
             if (isSyncing && firebaseRef) {
                 firebaseRef.set(appState);
             }
         }
 
         function loadLocalState() {
-            const saved = localStorage.getItem('spesaSmartState');
+            const saved = localStorage.getItem('spesaSmartStateV2');
             if (saved) {
                 try { appState = JSON.parse(saved); } catch(e) {}
             }
@@ -416,222 +419,263 @@
             }
         }
 
-        // --- CALCOLO PREZZI PROPORZIONALI ---
-        function getBaseUnitPrice(itemName) {
-            if (BASE_PRICES[itemName]) return BASE_PRICES[itemName];
-            return { base: 2.00, unit: "pz", refUnit: "pz" };
+        function getZoneByComune(comune) {
+            const c = comune.toLowerCase().trim();
+            const nord = ["milano", "torino", "venezia", "bologna", "genova", "firenze", "verona", "padova", "brescia", "parma", "trieste", "bergamo", "monza"];
+            const sud = ["napoli", "bari", "palermo", "catania", "messina", "taranto", "reggio calabria", "foggia", "salerno", "lecce", "cagliari", "sassari"];
+            if (nord.some(city => c.includes(city))) return "nord";
+            if (sud.some(city => c.includes(city))) return "sud";
+            return "centro";
         }
 
-        function calculateItemSubtotalForSupermarket(item, supermarketIndex) {
-            const info = getBaseUnitPrice(item.name);
-            let multiplier = 1;
-            
-            if (item.unit === 'g') {
-                multiplier = item.qty / 1000;
-            } else if (item.unit === 'ml') {
-                multiplier = item.qty / 1000;
-            } else {
-                multiplier = item.qty;
-            }
-
-            return info.base * multiplier * supermarketIndex;
+        function getActiveSupermarkets() {
+            const zone = getZoneByComune(appState.comune);
+            return ALL_SUPERMARKETS.filter(m => m.zones.includes(zone));
         }
 
-        function getBestSupermarketForCart() {
+        function calculateItemSubtotal(item, marketIndex) {
+            const info = BASE_PRICES[item.name] || { base: 2.00 };
+            let multiplier = (item.unit === 'g' || item.unit === 'ml') ? item.qty / 1000 : item.qty;
+            return info.base * multiplier * marketIndex;
+        }
+
+        function getBestSupermarketRankings() {
             const activeMarkets = getActiveSupermarkets();
             let totals = activeMarkets.map(market => {
                 let sum = 0;
-                for (let cat in appState.categories) {
-                    appState.categories[cat].items.forEach(item => {
-                        sum += calculateItemSubtotalForSupermarket(item, market.index);
-                    });
-                }
+                appState.items.forEach(item => {
+                    sum += calculateItemSubtotal(item, market.index);
+                });
                 return { market, total: sum };
             });
             totals.sort((a, b) => a.total - b.total);
             return totals;
         }
 
-        // --- RENDER PRINCIPALE ---
         function renderApp() {
             renderPodium();
-            renderMacroGroups();
+            renderMarketsList();
+            renderSelectedMarketDetails();
+            renderItemsLists();
             renderFooterTotal();
         }
 
         function renderPodium() {
-            const rankings = getBestSupermarketForCart();
+            const rankings = getBestSupermarketRankings();
             const top3 = rankings.slice(0, 3);
             const container = document.getElementById('podiumContainer');
             container.innerHTML = '';
 
             if (top3.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 col-span-3 text-center py-2">Nessun supermercato trovato per questo comune.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 col-span-3 text-center py-2">Nessun supermercato disponibile.</p>`;
                 return;
             }
 
+            const badgeColors = ['bg-amber-100 text-amber-800 border-amber-300', 'bg-slate-100 text-slate-700 border-slate-300', 'bg-orange-100 text-orange-800 border-orange-300'];
+            const medals = ['🥇', '🥈', '🥉'];
+
             top3.forEach((item, idx) => {
-                const badgeColors = ['bg-amber-100 text-amber-800 border-amber-300', 'bg-slate-100 text-slate-700 border-slate-300', 'bg-orange-100 text-orange-800 border-orange-300'];
-                const medals = ['🥇', '🥈', '🥉'];
                 container.innerHTML += `
-                    <div class="bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 flex justify-between items-center relative overflow-hidden">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg ${badgeColors[idx]} border flex items-center justify-center font-bold text-xs shadow-xs">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="w-6 h-6 rounded-lg ${badgeColors[idx]} border flex items-center justify-center font-bold text-xs">
                                 ${medals[idx]}
                             </span>
-                            <div>
-                                <h4 class="font-bold text-xs text-slate-800">${item.market.name}</h4>
-                                <a href="${item.market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline flex items-center gap-1 font-semibold">
-                                    Volantino Ufficiale <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="text-right">
                             <span class="text-xs font-extrabold text-slate-800">€ ${item.total.toFixed(2)}</span>
-                            <p class="text-[9px] text-slate-400 capitalize">${item.market.type}</p>
                         </div>
+                        <h4 class="font-bold text-xs text-slate-800 truncate">${item.market.name}</h4>
+                        <a href="${item.market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline font-semibold mt-1">
+                            Volantino <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        </a>
                     </div>
                 `;
             });
         }
 
-        function renderMacroGroups() {
-            const container = document.getElementById('macroGroupsContainer');
+        function renderMarketsList() {
+            const container = document.getElementById('marketsVerticalList');
             container.innerHTML = '';
+            const activeMarkets = getActiveSupermarkets();
+            const radius = parseInt(document.getElementById('radiusSelect').value) || 10;
 
-            for (let catName in appState.categories) {
-                const cat = appState.categories[catName];
-                const isExpanded = appState.expandedCategories[catName];
-                const filteredItems = cat.items.filter(item => item.name.toLowerCase().includes(appState.searchQuery.toLowerCase()));
-                
-                if (appState.searchQuery && filteredItems.length === 0) continue;
+            // Simuliamo una distanza casuale ma coerente per ogni negozio in base al raggio
+            activeMarkets.forEach((market, index) => {
+                const simulatedKm = ((index * 1.4) % radius) + 0.5;
+                if (simulatedKm > radius) return;
 
-                const itemsToDisplay = appState.searchQuery ? filteredItems : cat.items;
-                const checkedCount = cat.items.filter(i => i.checked).length;
-
-                const bestMarketIndex = getBestSupermarketForCart()[0]?.market.index || 1;
-                let catTotal = 0;
-                cat.items.forEach(i => catTotal += calculateItemSubtotalForSupermarket(i, bestMarketIndex));
-
-                let itemsHtml = itemsToDisplay.map(item => {
-                    const subtotal = calculateItemSubtotalForSupermarket(item, bestMarketIndex);
-                    
-                    return `
-                        <div class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
-                            <div class="flex items-center gap-3 flex-1 min-w-0">
-                                <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck('${catName}', '${item.id}')"
-                                       class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">
-                                <span class="text-xs font-medium text-slate-700 truncate ${item.checked ? 'line-through text-slate-400' : ''}">${item.name}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="openQtyModal('${catName}', '${item.id}')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 transition">
-                                    ${item.qty} ${item.unit}
-                                </button>
-                                <div class="text-right w-16">
-                                    <span class="text-xs font-bold text-slate-800">€ ${subtotal.toFixed(2)}</span>
-                                </div>
-                                <button onclick="deleteItem('${catName}', '${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                const isSelected = appState.selectedMarketId === market.id;
 
                 container.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-3.5 bg-slate-50/70 flex justify-between items-center cursor-pointer select-none border-b border-slate-100" onclick="toggleAccordion('${catName}')">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
-                                    <i class="fa-solid ${cat.icon}"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-xs text-slate-800">${catName}</h3>
-                                    <p class="text-[10px] text-slate-400">${cat.items.length} prodotti (${checkedCount} spuntati)</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span class="text-xs font-bold text-emerald-600">€ ${catTotal.toFixed(2)}</span>
-                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}"></i>
-                            </div>
+                    <div onclick="selectMarket('${market.id}')" class="p-2 rounded-xl border text-xs cursor-pointer flex justify-between items-center transition ${isSelected ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-slate-50/50 border-slate-200 hover:bg-slate-100'}">
+                        <div>
+                            <p class="font-bold text-slate-800">${market.name}</p>
+                            <p class="text-[10px] text-slate-400">A circa ${simulatedKm.toFixed(1)} km</p>
                         </div>
-                        <div class="accordion-content px-2 ${isExpanded ? 'block' : 'hidden'}">
-                            ${itemsHtml || '<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto trovato</p>'}
-                        </div>
+                        <span class="text-[10px] font-bold text-emerald-700 bg-white px-2 py-1 rounded-lg border border-slate-200">Seleziona</span>
                     </div>
                 `;
+            });
+        }
+
+        function selectMarket(marketId) {
+            appState.selectedMarketId = marketId;
+            renderSelectedMarketDetails();
+            renderMarketsList();
+        }
+
+        function renderSelectedMarketDetails() {
+            const detailsDiv = document.getElementById('selectedMarketDetails');
+            if (!appState.selectedMarketId) {
+                detailsDiv.classList.add('hidden');
+                return;
+            }
+
+            const market = ALL_SUPERMARKETS.find(m => m.id === appState.selectedMarketId);
+            if (!market) {
+                detailsDiv.classList.add('hidden');
+                return;
+            }
+
+            let marketTotal = 0;
+            appState.items.forEach(item => {
+                marketTotal += calculateItemSubtotal(item, market.index);
+            });
+
+            detailsDiv.classList.remove('hidden');
+            detailsDiv.innerHTML = `
+                <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-emerald-700 tracking-wider">Negozio Selezionato</span>
+                        <h4 class="font-bold text-sm text-slate-800">${market.name}</h4>
+                        <a href="${market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline font-semibold">Apri Volantino Ufficiale <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-extrabold text-emerald-700">€ ${marketTotal.toFixed(2)}</span>
+                        <p class="text-[9px] text-slate-500">Costo stimato spesa</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderItemsLists() {
+            const pendingContainer = document.getElementById('pendingItemsContainer');
+            const cartContainer = document.getElementById('cartItemsContainer');
+            
+            pendingContainer.innerHTML = '';
+            cartContainer.innerHTML = '';
+
+            const filtered = appState.items.filter(item => item.name.toLowerCase().includes(appState.searchQuery.toLowerCase()));
+            const pendingItems = filtered.filter(i => !i.checked);
+            const cartItems = filtered.filter(i => i.checked);
+
+            document.getElementById('pendingCountLabel').innerText = `${pendingItems.length} prodotti`;
+            document.getElementById('cartCountLabel').innerText = `${cartItems.length} prodotti nel carrello`;
+
+            const bestMarketIndex = getBestSupermarketRankings()[0]?.market.index || 1;
+
+            // Render Lista Da Acquistare
+            if (pendingItems.length === 0) {
+                pendingContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto da acquistare</p>`;
+            } else {
+                pendingItems.forEach(item => {
+                    const subtotal = calculateItemSubtotal(item, bestMarketIndex);
+                    pendingContainer.innerHTML += createItemCard(item, subtotal);
+                });
+            }
+
+            // Render Nel Carrello
+            if (cartItems.length === 0) {
+                cartContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto nel carrello</p>`;
+            } else {
+                cartItems.forEach(item => {
+                    const subtotal = calculateItemSubtotal(item, bestMarketIndex);
+                    cartContainer.innerHTML += createItemCard(item, subtotal);
+                });
             }
         }
 
+        function createItemCard(item, subtotal) {
+            return `
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
+                    <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck('${item.id}')"
+                               class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-semibold text-slate-800 break-words leading-snug ${item.checked ? 'line-through text-slate-400' : ''}">${item.name}</p>
+                            <span class="text-[10px] text-slate-400 font-medium">${item.category || 'Generico'}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between w-full sm:w-auto gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                        <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 transition">
+                            ${item.qty} ${item.unit}
+                        </button>
+                        <div class="text-right w-16">
+                            <span class="text-xs font-bold text-slate-800">€ ${subtotal.toFixed(2)}</span>
+                        </div>
+                        <button onclick="deleteItem('${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderFooterTotal() {
-            const best = getBestSupermarketForCart();
+            const best = getBestSupermarketRankings();
             let total = 0;
             if (best.length > 0) {
-                for (let cat in appState.categories) {
-                    appState.categories[cat].items.forEach(item => {
-                        total += calculateItemSubtotalForSupermarket(item, best[0].market.index);
-                    });
-                }
+                appState.items.forEach(item => {
+                    total += calculateItemSubtotal(item, best[0].market.index);
+                });
             }
             document.getElementById('footerTotalAmount').innerText = `€ ${total.toFixed(2)}`;
         }
 
-        // --- AZIONI UTENTE E INTERATTIVITÀ ---
-        function toggleAccordion(catName) {
-            appState.expandedCategories[catName] = !appState.expandedCategories[catName];
-            saveLocalState();
-            renderMacroGroups();
-        }
-
-        function toggleAllAccordions(expand) {
-            for (let cat in appState.categories) {
-                appState.expandedCategories[cat] = expand;
-            }
-            saveLocalState();
-            renderMacroGroups();
-        }
-
+        // --- AZIONI UTENTE ---
         function filterItems(query) {
             appState.searchQuery = query;
-            renderMacroGroups();
+            renderItemsLists();
         }
 
         function updateComune(val) {
             if (!val.trim()) return;
             appState.comune = val.trim();
-            document.getElementById('comuneDisplayLabel').innerText = `Comune: ${appState.comune}`;
+            document.getElementById('comuneDisplayLabel').innerText = appState.comune;
             saveLocalState();
             renderApp();
         }
 
-        function toggleItemCheck(catName, itemId) {
-            const item = appState.categories[catName].items.find(i => i.id === itemId);
+        function toggleItemCheck(itemId) {
+            const item = appState.items.find(i => i.id === itemId);
             if (item) {
                 item.checked = !item.checked;
                 saveLocalState();
-                renderMacroGroups();
+                renderApp();
             }
         }
 
-        function deleteItem(catName, itemId) {
-            appState.categories[catName].items = appState.categories[catName].items.filter(i => i.id !== itemId);
+        function deleteItem(itemId) {
+            appState.items = appState.items.filter(i => i.id !== itemId);
             saveLocalState();
             renderApp();
         }
 
-        function clearUncheckedItems() {
-            if (!confirm("Vuoi eliminare tutti i prodotti non spuntati dalla lista?")) return;
-            for (let cat in appState.categories) {
-                appState.categories[cat].items = appState.categories[cat].items.filter(i => i.checked);
-            }
+        function clearPendingList() {
+            if (!confirm("Vuoi svuotare tutti i prodotti della lista da acquistare?")) return;
+            appState.items = appState.items.filter(i => i.checked);
             saveLocalState();
             renderApp();
         }
 
-        // --- GESTIONE MODALE QUANTITÀ / PESO ---
-        let currentModalUnitType = 'qty';
+        function clearCartList() {
+            if (!confirm("Vuoi svuotare tutti i prodotti presenti nel carrello?")) return;
+            appState.items = appState.items.filter(i => !i.checked);
+            saveLocalState();
+            renderApp();
+        }
 
-        function openQtyModal(catName, itemId) {
-            activeQtyEdit = { categoryKey: catName, itemId: itemId };
-            const item = appState.categories[catName].items.find(i => i.id === itemId);
+        // --- QUANTITÀ MODALE ---
+        function openQtyModal(itemId) {
+            activeQtyEdit = itemId;
+            const item = appState.items.find(i => i.id === itemId);
             if (!item) return;
 
             document.getElementById('modalItemTitle').innerText = `Modifica: ${item.name}`;
@@ -651,62 +695,44 @@
         }
 
         function setModalUnitType(type, forceUnit = null) {
-            currentModalUnitType = type;
             const unitSelect = document.getElementById('modalUnitSelect');
             const quickBtns = document.getElementById('modalQuickButtons');
             unitSelect.innerHTML = '';
-
             const qtyBtn = document.getElementById('typeQtyBtn');
             const weightBtn = document.getElementById('typeWeightBtn');
 
             if (type === 'qty') {
                 qtyBtn.className = "py-2 text-xs font-bold rounded-xl border bg-emerald-600 text-white border-emerald-600 shadow-xs";
                 weightBtn.className = "py-2 text-xs font-bold rounded-xl border bg-slate-50 text-slate-600 border-slate-200";
-                document.getElementById('modalValueLabel').innerText = "Quantità (Pezzi / Confezioni)";
-                
+                document.getElementById('modalValueLabel').innerText = "Quantità (Pezzi)";
                 ['pz', 'conf', 'bott'].forEach(u => {
                     unitSelect.innerHTML += `<option value="${u}" ${forceUnit === u ? 'selected' : ''}>${u}</option>`;
                 });
-                quickBtns.innerHTML = `
-                    <button type="button" onclick="setQuickVal(1)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">1</button>
-                    <button type="button" onclick="setQuickVal(2)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">2</button>
-                    <button type="button" onclick="setQuickVal(3)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">3</button>
-                    <button type="button" onclick="setQuickVal(6)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">6</button>
-                `;
+                quickBtns.innerHTML = `<button type="button" onclick="setQuickVal(1)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1</button><button type="button" onclick="setQuickVal(2)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">2</button><button type="button" onclick="setQuickVal(3)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">3</button>`;
             } else {
                 weightBtn.className = "py-2 text-xs font-bold rounded-xl border bg-emerald-600 text-white border-emerald-600 shadow-xs";
                 qtyBtn.className = "py-2 text-xs font-bold rounded-xl border bg-slate-50 text-slate-600 border-slate-200";
                 document.getElementById('modalValueLabel').innerText = "Peso o Volume";
-
                 ['g', 'kg', 'ml', 'L'].forEach(u => {
                     unitSelect.innerHTML += `<option value="${u}" ${forceUnit === u ? 'selected' : ''}>${u}</option>`;
                 });
-                quickBtns.innerHTML = `
-                    <button type="button" onclick="setQuickVal(250, 'g')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">250g</button>
-                    <button type="button" onclick="setQuickVal(500, 'g')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">500g</button>
-                    <button type="button" onclick="setQuickVal(1, 'kg')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">1 kg</button>
-                    <button type="button" onclick="setQuickVal(1, 'L')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold">1 L</button>
-                `;
+                quickBtns.innerHTML = `<button type="button" onclick="setQuickVal(500, 'g')" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">500g</button><button type="button" onclick="setQuickVal(1, 'kg')" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1 kg</button><button type="button" onclick="setQuickVal(1, 'L')" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1 L</button>`;
             }
         }
 
         function adjustModalValue(amount) {
             const input = document.getElementById('modalValueInput');
             let val = parseFloat(input.value) || 0;
-            val = Math.max(0.1, val + amount);
-            input.value = val;
+            input.value = Math.max(0.1, val + amount);
         }
 
         function setQuickVal(val, unit = null) {
             document.getElementById('modalValueInput').value = val;
-            if (unit) {
-                document.getElementById('modalUnitSelect').value = unit;
-            }
+            if (unit) document.getElementById('modalUnitSelect').value = unit;
         }
 
         function saveItemQty() {
-            const { categoryKey, itemId } = activeQtyEdit;
-            const item = appState.categories[categoryKey].items.find(i => i.id === itemId);
+            const item = appState.items.find(i => i.id === activeQtyEdit);
             if (item) {
                 item.qty = parseFloat(document.getElementById('modalValueInput').value) || 1;
                 item.unit = document.getElementById('modalUnitSelect').value;
@@ -716,91 +742,63 @@
             closeQtyModal();
         }
 
-        // --- AGGIUNGI NUOVO PRODOTTO ---
-        function openAddModal() {
-            const catSelect = document.getElementById('addCategorySelect');
-            catSelect.innerHTML = '';
-            for (let cat in appState.categories) {
-                catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-            }
-            document.getElementById('addModal').classList.remove('hidden');
-        }
-
-        function closeAddModal() {
-            document.getElementById('addModal').classList.add('hidden');
-        }
+        // --- AGGIUNGI PRODOTTO ---
+        function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
 
         function addNewItem() {
             const name = document.getElementById('addNameInput').value.trim();
-            const cat = document.getElementById('addCategorySelect').value;
+            const category = document.getElementById('addCategorySelect').value;
             const qty = parseFloat(document.getElementById('addQtyInput').value) || 1;
             const unit = document.getElementById('addUnitSelect').value;
 
             if (!name) return;
 
-            const newItem = {
+            appState.items.push({
                 id: 'item_' + Date.now(),
                 name: name,
                 qty: qty,
                 unit: unit,
+                category: category,
                 checked: false
-            };
+            });
 
-            appState.categories[cat].items.push(newItem);
-            appState.expandedCategories[cat] = true;
             saveLocalState();
             renderApp();
             closeAddModal();
             document.getElementById('addNameInput').value = '';
         }
 
-        // --- MODALE ESPORTAZIONE TELEFONO & SYNC ---
-        function openMobileExportModal() {
-            document.getElementById('mobileExportModal').classList.remove('hidden');
-        }
-        function closeMobileExportModal() {
-            document.getElementById('mobileExportModal').classList.add('hidden');
-        }
-        function openSyncModal() {
-            document.getElementById('syncModal').classList.remove('hidden');
-        }
-        function closeSyncModal() {
-            document.getElementById('syncModal').classList.add('hidden');
-        }
+        // --- SYNC FIREBASE ---
+        function openSyncModal() { document.getElementById('syncModal').classList.remove('hidden'); }
+        function closeSyncModal() { document.getElementById('syncModal').classList.add('hidden'); }
+        function openMobileExportModal() { document.getElementById('mobileExportModal').classList.remove('hidden'); }
+        function closeMobileExportModal() { document.getElementById('mobileExportModal').classList.add('hidden'); }
 
-        // --- FIREBASE SYNC REALTIME ---
         function initFirebase(url, room) {
             try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp({ databaseURL: url });
-                }
-                firebaseRef = firebase.database().ref('spesasmart/' + room);
+                if (!firebase.apps.length) firebase.initializeApp({ databaseURL: url });
+                firebaseRef = firebase.database().ref('spesasmart_v2/' + room);
                 firebaseRef.on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if (data && data.categories) {
+                    if (data && data.items) {
                         appState = data;
                         renderApp();
                     }
                 });
                 isSyncing = true;
                 document.getElementById('syncStatusText').innerText = "Sincronizzato";
-            } catch(e) {
-                console.error("Errore connessione Firebase:", e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         function saveAndConnectFirebase() {
             const url = document.getElementById('firebaseUrlInput').value.trim();
             const room = document.getElementById('familyRoomInput').value.trim();
-            if (!url || !room) {
-                alert("Inserisci un URL Firebase e un codice stanza validi.");
-                return;
-            }
+            if (!url || !room) return alert("Inserisci URL e stanza validi.");
             localStorage.setItem('spesaSmartFirebaseUrl', url);
             localStorage.setItem('spesaSmartFirebaseRoom', room);
             initFirebase(url, room);
             closeSyncModal();
-            alert("Connesso con successo a Firebase!");
         }
 
         function disconnectFirebase() {
@@ -811,29 +809,19 @@
             isSyncing = false;
             document.getElementById('syncStatusText').innerText = "Sync";
             closeSyncModal();
-            alert("Sincronizzazione disconnessa.");
         }
 
         function checkAutoFirebase() {
             const url = localStorage.getItem('spesaSmartFirebaseUrl');
             const room = localStorage.getItem('spesaSmartFirebaseRoom');
-            if (url && room) {
-                initFirebase(url, room);
-            }
+            if (url && room) initFirebase(url, room);
         }
 
-        // --- MODELLO EXCEL & IMPORT ---
+        // --- EXCEL ---
         function downloadExcelTemplate() {
             const wb = XLSX.utils.book_new();
-            const wsData = [
-                ["Prodotto", "Quantita", "Unita", "Reparto"],
-                ["Pasta di semola 500g", 2, "conf", "Dispensa & Colazione"],
-                ["Latte intero 1L", 2, "L", "Frigo & Latticini"],
-                ["Petto di pollo fresco", 0.5, "kg", "Carne & Pesce"],
-                ["Mele Golden", 1, "kg", "Ortofrutta"]
-            ];
-            const ws = XLSX.utils.aoa_to_sheet(wsData);
-            XLSX.utils.book_append_sheet(wb, ws, "ListaSpesa");
+            const wsData = [["Prodotto", "Quantita", "Unita", "Reparto"], ["Pasta", 2, "conf", "Dispensa & Colazione"]];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), "Lista");
             XLSX.writeFile(wb, "Modello_SpesaSmart.xlsx");
         }
 
@@ -845,39 +833,21 @@
                 try {
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const json = XLSX.utils.sheet_to_json(worksheet);
-
-                    if (json && json.length > 0) {
-                        json.forEach(row => {
-                            const name = row.Prodotto || row.prodotto || row.Item;
-                            const qty = parseFloat(row.Quantita || row.quantità || row.Qty || 1);
-                            const unit = row.Unita || row.unità || row.Unit || 'pz';
-                            const cat = row.Reparto || row.reparto || row.Category || 'Dispensa & Colazione';
-
-                            if (name) {
-                                if (!appState.categories[cat]) {
-                                    appState.categories[cat] = { icon: "fa-basket-shopping", color: "slate", items: [] };
-                                    appState.expandedCategories[cat] = true;
-                                }
-                                appState.categories[cat].items.push({
-                                    id: 'imp_' + Math.random().toString(36).substring(2, 9),
-                                    name: name,
-                                    qty: isNaN(qty) ? 1 : qty,
-                                    unit: unit,
-                                    checked: false
-                                });
-                            }
+                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                    json.forEach(row => {
+                        appState.items.push({
+                            id: 'imp_' + Math.random().toString(36).substring(2, 9),
+                            name: row.Prodotto || row.Item,
+                            qty: parseFloat(row.Quantita || 1),
+                            unit: row.Unita || 'pz',
+                            category: row.Reparto || 'Dispensa & Colazione',
+                            checked: false
                         });
-                        saveLocalState();
-                        renderApp();
-                        alert("File importato con successo!");
-                    }
-                } catch(err) {
-                    console.error(err);
-                    alert("Errore durante la lettura del file. Assicurati che sia un file Excel o CSV valido.");
-                }
+                    });
+                    saveLocalState();
+                    renderApp();
+                    alert("Importato con successo!");
+                } catch(err) { alert("Errore file."); }
             };
             reader.readAsArrayBuffer(file);
         }
