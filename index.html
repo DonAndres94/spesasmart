@@ -30,7 +30,6 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
       body { font-family: 'Plus Jakarta Sans', sans-serif; }
-      .accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
@@ -65,8 +64,8 @@
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-200">
                         <i class="fa-solid fa-location-dot text-xs"></i>
                     </span>
-                    <input type="text" id="comuneInput" placeholder="Inserisci Comune..." 
-                           class="w-full md:w-44 pl-8 pr-3 py-1.5 bg-emerald-800/60 border border-emerald-500/40 rounded-xl text-xs text-white placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    <input type="text" id="comuneInput" placeholder="Inserisci Città (es. Roma, Milano...)" 
+                           class="w-full md:w-52 pl-8 pr-3 py-1.5 bg-emerald-800/60 border border-emerald-500/40 rounded-xl text-xs text-white placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-white/50"
                            onchange="updateComune(this.value)">
                 </div>
                 <button onclick="openSyncModal()" class="hidden md:flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition">
@@ -82,9 +81,9 @@
     <!-- Contenuto Principale -->
     <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- Sezione Podio Top 3 + Elenco Verticale Raggio km -->
+        <!-- Sezione Podio Top 3 + Elenco Verticale con Distanza Reale -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Podio Top 3 (2 Colonne su Desktop) -->
+            <!-- Podio Top 3 -->
             <div class="md:col-span-2 bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-3">
@@ -97,32 +96,32 @@
                         <!-- Generato da JS -->
                     </div>
                 </div>
-                <!-- Supermercato Selezionato dalla lista laterale -->
+                <!-- Supermercato Selezionato -->
                 <div id="selectedMarketDetails" class="mt-4 pt-3 border-t border-slate-100 hidden">
                     <!-- Generato da JS -->
                 </div>
             </div>
 
-            <!-- Finestra Verticale Elenco Supermercati con Raggio km -->
+            <!-- Finestra Verticale Elenco Supermercati con Filtro Raggio Reale in km -->
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
-                        <i class="fa-solid fa-store text-emerald-600"></i> Nel raggio
+                        <i class="fa-solid fa-store text-emerald-600"></i> Negozi in Zona
                     </h2>
                     <select id="radiusSelect" onchange="renderMarketsList()" class="bg-slate-100 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg border border-slate-200 focus:outline-none">
-                        <option value="5">5 km</option>
-                        <option value="10" selected>10 km</option>
-                        <option value="20">20 km</option>
+                        <option value="5">Entro 5 km</option>
+                        <option value="10" selected>Entro 10 km</option>
+                        <option value="20">Entro 20 km</option>
                     </select>
                 </div>
-                <p class="text-[10px] text-slate-400 mb-2">Clicca su un negozio per calcolare il costo esatto:</p>
+                <p class="text-[10px] text-slate-400 mb-2">Distanze calcolate dal centro città:</p>
                 <div id="marketsVerticalList" class="space-y-2 overflow-y-auto max-h-48 pr-1">
                     <!-- Generato da JS -->
                 </div>
             </div>
         </section>
 
-        <!-- Barra Strumenti Lista (Ricerca, Aggiungi, Excel) -->
+        <!-- Barra Strumenti -->
         <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-3 items-center justify-between">
             <div class="relative w-full md:w-64">
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -137,54 +136,42 @@
                 <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
                     <i class="fa-solid fa-plus"></i> Aggiungi Prodotto
                 </button>
-                <button onclick="downloadExcelTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Scarica modello Excel">
+                <button onclick="downloadExcelTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-file-arrow-down text-emerald-600"></i> Modello Excel
                 </button>
-                <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition" title="Carica file Excel o CSV">
+                <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition">
                     <i class="fa-solid fa-file-arrow-up text-emerald-600"></i> Importa
                     <input type="file" id="fileExcelInput" accept=".xlsx, .xls, .csv, .txt" class="hidden" onchange="handleFileImport(event)">
                 </label>
             </div>
         </section>
 
-        <!-- Sezione 1: Lista della Spesa (Non ancora acquistati) -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-3.5 bg-slate-50/80 flex justify-between items-center border-b border-slate-100">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm">
-                        <i class="fa-solid fa-list-check"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-xs text-slate-800">Da Acquistare (Lista)</h3>
-                        <p class="text-[10px] text-slate-400" id="pendingCountLabel">0 prodotti</p>
-                    </div>
-                </div>
+        <!-- SEZIONE 1: REPARTI - DA ACQUISTARE -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-list-check text-amber-500"></i> Reparti - Da Acquistare
+                </h2>
                 <button onclick="clearPendingList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-trash-can text-rose-500"></i> Pulisci Lista
                 </button>
             </div>
-            <div id="pendingItemsContainer" class="p-2 space-y-2">
+            <div id="pendingMacroGroupsContainer" class="space-y-3">
                 <!-- Generato da JS -->
             </div>
         </section>
 
-        <!-- Sezione 2: Nel Carrello (Acquistati) -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-3.5 bg-slate-50/80 flex justify-between items-center border-b border-slate-100">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-xs text-slate-800">Nel Carrello</h3>
-                        <p class="text-[10px] text-slate-400" id="cartCountLabel">0 prodotti</p>
-                    </div>
-                </div>
+        <!-- SEZIONE 2: REPARTI - NEL CARRELLO -->
+        <section class="space-y-4 pt-2">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-cart-shopping text-emerald-600"></i> Reparti - Nel Carrello
+                </h2>
                 <button onclick="clearCartList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-trash-can text-rose-500"></i> Pulisci Carrello
                 </button>
             </div>
-            <div id="cartItemsContainer" class="p-2 space-y-2">
+            <div id="cartMacroGroupsContainer" class="space-y-3">
                 <!-- Generato da JS -->
             </div>
         </section>
@@ -199,12 +186,12 @@
                 <p class="text-lg font-extrabold text-emerald-600" id="footerTotalAmount">€ 0,00</p>
             </div>
             <div class="text-xs text-slate-500 font-medium">
-                Gestione Spesa Condivisa Famiglia
+                Gestione Famiglia Sincronizzata
             </div>
         </div>
     </div>
 
-    <!-- Modale Modifica Quantità / Peso -->
+    <!-- Modale Modifica Quantità -->
     <div id="qtyModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
@@ -229,14 +216,13 @@
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-slate-500 mb-1 block">Unità di Misura</label>
-                    <select id="modalUnitSelect" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </select>
+                    <select id="modalUnitSelect" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none"></select>
                 </div>
                 <div id="modalQuickButtons" class="flex gap-1.5 flex-wrap pt-1"></div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeQtyModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">Annulla</button>
-                <button onclick="saveItemQty()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition">Salva</button>
+                <button onclick="closeQtyModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Annulla</button>
+                <button onclick="saveItemQty()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow">Salva</button>
             </div>
         </div>
     </div>
@@ -289,7 +275,7 @@
         </div>
     </div>
 
-    <!-- Modale Esportazione Telefono / PWA -->
+    <!-- Modale Esportazione Telefono -->
     <div id="mobileExportModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 text-center">
             <div class="flex justify-between items-center">
@@ -313,7 +299,6 @@
                 <h3 class="font-bold text-sm text-slate-800">Sincronizzazione Cloud (Famiglia)</h3>
                 <button onclick="closeSyncModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <p class="text-xs text-slate-500">Inserisci l'URL del tuo database Firebase Realtime e la stanza condivisa.</p>
             <div class="space-y-3">
                 <div>
                     <label class="text-xs font-semibold text-slate-500 mb-1 block">URL Firebase Database</label>
@@ -332,40 +317,71 @@
     </div>
 
     <script>
-        // --- CONFIGURAZIONE SUPERMERCATI ---
+        // --- ARCHIVIO COORDINATE CITTÀ (Metodo B) ---
+        const CITY_COORDINATES = {
+            "roma": { lat: 41.9028, lon: 12.4964, zone: "centro" },
+            "milano": { lat: 45.4642, lon: 9.1900, zone: "nord" },
+            "napoli": { lat: 40.8518, lon: 14.2681, zone: "sud" },
+            "torino": { lat: 45.0703, lon: 7.6869, zone: "nord" },
+            "bologna": { lat: 44.4949, lon: 11.3426, zone: "nord" },
+            "firenze": { lat: 43.7696, lon: 11.2558, zone: "centro" },
+            "venezia": { lat: 45.4408, lon: 12.3155, zone: "nord" },
+            "bari": { lat: 41.1171, lon: 16.8719, zone: "sud" },
+            "palermo": { lat: 38.1157, lon: 13.3615, zone: "isole" },
+            "catania": { lat: 37.5079, lon: 15.0830, zone: "isole" },
+            "verona": { lat: 45.4384, lon: 10.9916, zone: "nord" },
+            "padova": { lat: 45.4064, lon: 11.8768, zone: "nord" },
+            "brescia": { lat: 45.5416, lon: 10.2118, zone: "nord" },
+            "parma": { lat: 44.8015, lon: 10.3279, zone: "nord" },
+            "genova": { lat: 44.4056, lon: 8.9463, zone: "nord" },
+            "cagliari": { lat: 39.2238, lon: 9.1217, zone: "isole" },
+            "salerno": { lat: 40.6824, lon: 14.7681, zone: "sud" },
+            "lecce": { lat: 40.3529, lon: 18.1748, zone: "sud" }
+        };
+
+        // --- SUPERMERCATI CON COORDINATE SIMULATE NEI DINTORNI ---
         const ALL_SUPERMARKETS = [
-            { id: "eurospin", name: "Eurospin", type: "discount", index: 0.85, color: "emerald", url: "https://www.eurospin.it/volantino/", zones: ["nord", "centro", "sud", "isole"] },
-            { id: "lidl", name: "Lidl", type: "discount", index: 0.88, color: "blue", url: "https://www.lidl.it/volantini", zones: ["nord", "centro", "sud", "isole"] },
-            { id: "conad", name: "Conad", type: "superstore", index: 1.05, color: "red", url: "https://www.conad.it/volantini", zones: ["nord", "centro", "sud", "isole"] },
-            { id: "coop", name: "Coop", type: "superstore", index: 1.06, color: "red", url: "https://www.e-coop.it/volantini", zones: ["nord", "centro", "sud"] },
-            { id: "carrefour", name: "Carrefour", type: "superstore", index: 1.04, color: "blue", url: "https://www.carrefour.it/volantino/", zones: ["nord", "centro", "sud"] },
-            { id: "esselunga", name: "Esselunga", type: "superstore", index: 1.02, color: "red", url: "https://www.esselunga.it/it-it/volantino.html", zones: ["nord", "centro"] },
-            { id: "penny", name: "Penny", type: "discount", index: 0.88, color: "violet", url: "https://www.penny.it/volantino", zones: ["nord", "centro"] },
-            { id: "md", name: "MD Spa", type: "discount", index: 0.87, color: "amber", url: "https://www.mdspa.it/volantino", zones: ["centro", "sud", "isole", "nord"] },
-            { id: "despar", name: "Despar", type: "superstore", index: 1.05, color: "emerald", url: "https://www.despar.it/it/volantini/", zones: ["nord", "centro", "sud"] },
-            { id: "pam", name: "Pam", type: "superstore", index: 1.03, color: "red", url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"] },
-            { id: "todis", name: "Todis", type: "discount", index: 0.89, color: "red", url: "https://www.todis.it/volantino/", zones: ["centro", "sud"] },
-            { id: "ma", name: "MA Supermercati", type: "supermarket", index: 0.90, color: "blue", url: "https://www.masupermercati.it/", zones: ["centro"] },
-            { id: "iperdem", name: "IperDem", type: "supermarket", index: 0.92, color: "blue", url: "https://www.iperdem.it/", zones: ["centro"] },
-            { id: "castoro", name: "Il Castoro", type: "supermarket", index: 0.95, color: "orange", url: "https://www.spesilcastoro.it/", zones: ["centro"] },
-            { id: "tigre", name: "Tigre", type: "supermarket", index: 1.01, color: "orange", url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"] },
-            { id: "crai", name: "Crai", type: "supermarket", index: 1.08, color: "red", url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"] }
+            { id: "eurospin", name: "Eurospin", type: "Discount", index: 0.85, url: "https://www.eurospin.it/volantino/", zones: ["nord", "centro", "sud", "isole"], dLat: 0.03, dLon: 0.02 },
+            { id: "lidl", name: "Lidl", type: "Discount", index: 0.88, url: "https://www.lidl.it/volantini", zones: ["nord", "centro", "sud", "isole"], dLat: -0.02, dLon: 0.04 },
+            { id: "conad", name: "Conad", type: "Superstore", index: 1.05, url: "https://www.conad.it/volantini", zones: ["nord", "centro", "sud", "isole"], dLat: 0.01, dLon: -0.03 },
+            { id: "coop", name: "Coop", type: "Superstore", index: 1.06, url: "https://www.e-coop.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: 0.01 },
+            { id: "carrefour", name: "Carrefour", type: "Superstore", index: 1.04, url: "https://www.carrefour.it/volantino/", zones: ["nord", "centro", "sud"], dLat: -0.04, dLon: -0.02 },
+            { id: "esselunga", name: "Esselunga", type: "Superstore", index: 1.02, url: "https://www.esselunga.it/it-it/volantino.html", zones: ["nord", "centro"], dLat: 0.02, dLon: 0.05 },
+            { id: "penny", name: "Penny", type: "Discount", index: 0.88, url: "https://www.penny.it/volantino", zones: ["nord", "centro"], dLat: -0.03, dLon: 0.03 },
+            { id: "md", name: "MD Spa", type: "Discount", index: 0.87, url: "https://www.mdspa.it/volantino", zones: ["centro", "sud", "isole", "nord"], dLat: 0.04, dLon: -0.04 },
+            { id: "despar", name: "Despar", type: "Superstore", index: 1.05, url: "https://www.despar.it/it/volantini/", zones: ["nord", "centro", "sud"], dLat: -0.05, dLon: 0.01 },
+            { id: "pam", name: "Pam", type: "Superstore", index: 1.03, url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"], dLat: 0.01, dLon: 0.04 },
+            { id: "todis", name: "Todis", type: "Discount", index: 0.89, url: "https://www.todis.it/volantino/", zones: ["centro", "sud"], dLat: -0.02, dLon: -0.05 },
+            { id: "ma", name: "MA Supermercati", type: "Supermercato", index: 0.90, url: "https://www.masupermercati.it/", zones: ["centro"], dLat: 0.03, dLon: -0.01 },
+            { id: "iperdem", name: "IperDem", type: "Supermercato", index: 0.92, url: "https://www.iperdem.it/", zones: ["centro"], dLat: -0.01, dLon: -0.03 },
+            { id: "castoro", name: "Il Castoro", type: "Supermercato", index: 0.95, url: "https://www.spesilcastoro.it/", zones: ["centro"], dLat: 0.02, dLon: 0.02 },
+            { id: "tigre", name: "Tigre", type: "Supermercato", index: 1.01, url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"], dLat: -0.04, dLon: 0.02 },
+            { id: "crai", name: "Crai", type: "Supermercato", index: 1.08, url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: -0.03 }
         ];
 
         const BASE_PRICES = {
-            "Pasta di semola 500g": { base: 0.95, unit: "conf" },
-            "Passata di pomodoro 700g": { base: 1.15, unit: "conf" },
-            "Olio Extravergine d'Oliva 1L": { base: 8.90, unit: "L" },
-            "Latte intero 1L": { base: 1.29, unit: "L" },
-            "Acqua naturale 1.5L (pack 6)": { base: 1.95, unit: "conf" },
-            "Petto di pollo fresco": { base: 8.90, unit: "kg" },
-            "Carne macinata mista": { base: 7.50, unit: "kg" },
-            "Mozzarella di bufala 125g": { base: 1.49, unit: "pz" },
-            "Parmigiano Reggiano 250g": { base: 4.50, unit: "conf" },
-            "Mele Golden (sfuse)": { base: 2.19, unit: "kg" },
-            "Banane": { base: 1.69, unit: "kg" },
-            "Detersivo lavatrice liquido": { base: 3.80, unit: "pz" },
-            "Carta igienica (confezione 4 rotoli)": { base: 1.90, unit: "conf" }
+            "Pasta di semola 500g": { base: 0.95 },
+            "Passata di pomodoro 700g": { base: 1.15 },
+            "Olio Extravergine d'Oliva 1L": { base: 8.90 },
+            "Latte intero 1L": { base: 1.29 },
+            "Acqua naturale 1.5L (pack 6)": { base: 1.95 },
+            "Petto di pollo fresco": { base: 8.90 },
+            "Carne macinata mista": { base: 7.50 },
+            "Mozzarella di bufala 125g": { base: 1.49 },
+            "Parmigiano Reggiano 250g": { base: 4.50 },
+            "Mele Golden (sfuse)": { base: 2.19 },
+            "Banane": { base: 1.69 },
+            "Detersivo lavatrice liquido": { base: 3.80 },
+            "Carta igienica (confezione 4 rotoli)": { base: 1.90 }
+        };
+
+        const MACRO_META = {
+            "Dispensa & Colazione": { icon: "fa-wheat-awn" },
+            "Frigo & Latticini": { icon: "fa-cheese" },
+            "Ortofrutta": { icon: "fa-carrot" },
+            "Carne & Pesce": { icon: "fa-drumstick-bite" },
+            "Bevande": { icon: "fa-bottle-water" },
+            "Casa & Igiene": { icon: "fa-pump-soap" }
         };
 
         const INITIAL_ITEMS = [
@@ -383,6 +399,14 @@
             comune: "Roma",
             searchQuery: "",
             selectedMarketId: null,
+            expandedCategories: {
+                "Dispensa & Colazione": true,
+                "Frigo & Latticini": true,
+                "Ortofrutta": true,
+                "Carne & Pesce": true,
+                "Bevande": true,
+                "Casa & Igiene": true
+            },
             items: INITIAL_ITEMS
         };
 
@@ -399,14 +423,14 @@
         });
 
         function saveLocalState() {
-            localStorage.setItem('spesaSmartStateV2', JSON.stringify(appState));
+            localStorage.setItem('spesaSmartStateV5', JSON.stringify(appState));
             if (isSyncing && firebaseRef) {
                 firebaseRef.set(appState);
             }
         }
 
         function loadLocalState() {
-            const saved = localStorage.getItem('spesaSmartStateV2');
+            const saved = localStorage.getItem('spesaSmartStateV5');
             if (saved) {
                 try { appState = JSON.parse(saved); } catch(e) {}
             }
@@ -419,18 +443,43 @@
             }
         }
 
-        function getZoneByComune(comune) {
-            const c = comune.toLowerCase().trim();
-            const nord = ["milano", "torino", "venezia", "bologna", "genova", "firenze", "verona", "padova", "brescia", "parma", "trieste", "bergamo", "monza"];
-            const sud = ["napoli", "bari", "palermo", "catania", "messina", "taranto", "reggio calabria", "foggia", "salerno", "lecce", "cagliari", "sassari"];
-            if (nord.some(city => c.includes(city))) return "nord";
-            if (sud.some(city => c.includes(city))) return "sud";
-            return "centro";
+        // --- FORMULA DI HAVERSINE PER CALCOLO DISTANZA REALE IN KM ---
+        function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Raggio della Terra in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
         }
 
-        function getActiveSupermarkets() {
-            const zone = getZoneByComune(appState.comune);
-            return ALL_SUPERMARKETS.filter(m => m.zones.includes(zone));
+        function getCityData(comuneName) {
+            const key = comuneName.toLowerCase().trim();
+            if (CITY_COORDINATES[key]) {
+                return CITY_COORDINATES[key];
+            }
+            // Fallback generico su Roma se la città non è in elenco
+            return { lat: 41.9028, lon: 12.4964, zone: "centro" };
+        }
+
+        function getActiveSupermarketsWithDistance() {
+            const cityData = getCityData(appState.comune);
+            const radiusLimit = parseFloat(document.getElementById('radiusSelect')?.value) || 10;
+
+            // Filtra per zona e calcola distanza reale con Haversine
+            return ALL_SUPERMARKETS
+                .filter(m => m.zones.includes(cityData.zone))
+                .map(market => {
+                    const mLat = cityData.lat + market.dLat;
+                    const mLon = cityData.lon + market.dLon;
+                    const distance = calculateDistanceKm(cityData.lat, cityData.lon, mLat, mLon);
+                    return { ...market, distance };
+                })
+                .filter(market => market.distance <= radiusLimit)
+                .sort((a, b) => a.distance - b.distance);
         }
 
         function calculateItemSubtotal(item, marketIndex) {
@@ -440,7 +489,7 @@
         }
 
         function getBestSupermarketRankings() {
-            const activeMarkets = getActiveSupermarkets();
+            const activeMarkets = getActiveSupermarketsWithDistance();
             let totals = activeMarkets.map(market => {
                 let sum = 0;
                 appState.items.forEach(item => {
@@ -456,7 +505,7 @@
             renderPodium();
             renderMarketsList();
             renderSelectedMarketDetails();
-            renderItemsLists();
+            renderMacroGroupsLists();
             renderFooterTotal();
         }
 
@@ -467,7 +516,7 @@
             container.innerHTML = '';
 
             if (top3.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 col-span-3 text-center py-2">Nessun supermercato disponibile.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 col-span-3 text-center py-2">Nessun supermercato nel raggio selezionato.</p>`;
                 return;
             }
 
@@ -484,9 +533,12 @@
                             <span class="text-xs font-extrabold text-slate-800">€ ${item.total.toFixed(2)}</span>
                         </div>
                         <h4 class="font-bold text-xs text-slate-800 truncate">${item.market.name}</h4>
-                        <a href="${item.market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline font-semibold mt-1">
-                            Volantino <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                        </a>
+                        <div class="flex justify-between items-center mt-1">
+                            <a href="${item.market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline font-semibold">
+                                Volantino <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                            </a>
+                            <span class="text-[9px] text-slate-400">${item.market.distance.toFixed(1)} km</span>
+                        </div>
                     </div>
                 `;
             });
@@ -495,21 +547,20 @@
         function renderMarketsList() {
             const container = document.getElementById('marketsVerticalList');
             container.innerHTML = '';
-            const activeMarkets = getActiveSupermarkets();
-            const radius = parseInt(document.getElementById('radiusSelect').value) || 10;
+            const activeMarkets = getActiveSupermarketsWithDistance();
 
-            // Simuliamo una distanza casuale ma coerente per ogni negozio in base al raggio
-            activeMarkets.forEach((market, index) => {
-                const simulatedKm = ((index * 1.4) % radius) + 0.5;
-                if (simulatedKm > radius) return;
+            if (activeMarkets.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">Nessun negozio trovato nel raggio. Prova ad aumentare i km.</p>`;
+                return;
+            }
 
+            activeMarkets.forEach((market) => {
                 const isSelected = appState.selectedMarketId === market.id;
-
                 container.innerHTML += `
                     <div onclick="selectMarket('${market.id}')" class="p-2 rounded-xl border text-xs cursor-pointer flex justify-between items-center transition ${isSelected ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-slate-50/50 border-slate-200 hover:bg-slate-100'}">
                         <div>
                             <p class="font-bold text-slate-800">${market.name}</p>
-                            <p class="text-[10px] text-slate-400">A circa ${simulatedKm.toFixed(1)} km</p>
+                            <p class="text-[10px] text-slate-400">${market.distance.toFixed(1)} km • ${market.type}</p>
                         </div>
                         <span class="text-[10px] font-bold text-emerald-700 bg-white px-2 py-1 rounded-lg border border-slate-200">Seleziona</span>
                     </div>
@@ -557,9 +608,9 @@
             `;
         }
 
-        function renderItemsLists() {
-            const pendingContainer = document.getElementById('pendingItemsContainer');
-            const cartContainer = document.getElementById('cartItemsContainer');
+        function renderMacroGroupsLists() {
+            const pendingContainer = document.getElementById('pendingMacroGroupsContainer');
+            const cartContainer = document.getElementById('cartMacroGroupsContainer');
             
             pendingContainer.innerHTML = '';
             cartContainer.innerHTML = '';
@@ -568,54 +619,123 @@
             const pendingItems = filtered.filter(i => !i.checked);
             const cartItems = filtered.filter(i => i.checked);
 
-            document.getElementById('pendingCountLabel').innerText = `${pendingItems.length} prodotti`;
-            document.getElementById('cartCountLabel').innerText = `${cartItems.length} prodotti nel carrello`;
+            const rankings = getBestSupermarketRankings();
+            const bestMarketIndex = rankings[0]?.market.index || 1;
+            const categories = Object.keys(MACRO_META);
 
-            const bestMarketIndex = getBestSupermarketRankings()[0]?.market.index || 1;
+            // Render "Da Acquistare"
+            let hasPending = false;
+            categories.forEach(catName => {
+                const catItems = pendingItems.filter(i => (i.category || 'Dispensa & Colazione') === catName);
+                if (catItems.length === 0 && appState.searchQuery) return;
+                hasPending = true;
 
-            // Render Lista Da Acquistare
-            if (pendingItems.length === 0) {
-                pendingContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto da acquistare</p>`;
-            } else {
-                pendingItems.forEach(item => {
+                const isExpanded = appState.expandedCategories[catName] !== false;
+                let catTotal = 0;
+                catItems.forEach(i => catTotal += calculateItemSubtotal(i, bestMarketIndex));
+
+                let itemsHtml = catItems.map(item => {
                     const subtotal = calculateItemSubtotal(item, bestMarketIndex);
-                    pendingContainer.innerHTML += createItemCard(item, subtotal);
-                });
-            }
+                    return `
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2.5 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
+                            <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
+                                <input type="checkbox" onchange="toggleItemCheck('${item.id}')"
+                                       class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
+                                <span class="text-xs font-semibold text-slate-800 break-words leading-snug flex-1">${item.name}</span>
+                            </div>
+                            <div class="flex items-center justify-between w-full sm:w-auto gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                                <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 transition">
+                                    ${item.qty} ${item.unit}
+                                </button>
+                                <div class="text-right w-16">
+                                    <span class="text-xs font-bold text-slate-800">€ ${subtotal.toFixed(2)}</span>
+                                </div>
+                                <button onclick="deleteItem('${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
 
-            // Render Nel Carrello
-            if (cartItems.length === 0) {
-                cartContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto nel carrello</p>`;
-            } else {
-                cartItems.forEach(item => {
-                    const subtotal = calculateItemSubtotal(item, bestMarketIndex);
-                    cartContainer.innerHTML += createItemCard(item, subtotal);
-                });
-            }
-        }
-
-        function createItemCard(item, subtotal) {
-            return `
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
-                    <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck('${item.id}')"
-                               class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
-                        <div class="min-w-0 flex-1">
-                            <p class="text-xs font-semibold text-slate-800 break-words leading-snug ${item.checked ? 'line-through text-slate-400' : ''}">${item.name}</p>
-                            <span class="text-[10px] text-slate-400 font-medium">${item.category || 'Generico'}</span>
+                pendingContainer.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-3.5 bg-slate-50/70 flex justify-between items-center cursor-pointer select-none border-b border-slate-100" onclick="toggleCategory('${catName}')">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm">
+                                    <i class="fa-solid ${MACRO_META[catName].icon}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xs text-slate-800">${catName}</h3>
+                                    <p class="text-[10px] text-slate-400">${catItems.length} prodotti</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-emerald-600">€ ${catTotal.toFixed(2)}</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}"></i>
+                            </div>
+                        </div>
+                        <div class="px-2 ${isExpanded ? 'block' : 'hidden'}">
+                            ${itemsHtml || '<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto</p>'}
                         </div>
                     </div>
-                    <div class="flex items-center justify-between w-full sm:w-auto gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                        <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 transition">
-                            ${item.qty} ${item.unit}
-                        </button>
-                        <div class="text-right w-16">
-                            <span class="text-xs font-bold text-slate-800">€ ${subtotal.toFixed(2)}</span>
+                `;
+            });
+
+            if (!hasPending) {
+                pendingContainer.innerHTML = `<div class="bg-white rounded-2xl p-4 text-center text-xs text-slate-400 border border-slate-100">La lista da acquistare è vuota.</div>`;
+            }
+
+            // Render "Nel Carrello"
+            let hasCart = false;
+            categories.forEach(catName => {
+                const catItems = cartItems.filter(i => (i.category || 'Dispensa & Colazione') === catName);
+                if (catItems.length === 0) return;
+                hasCart = true;
+
+                let itemsHtml = catItems.map(item => {
+                    const subtotal = calculateItemSubtotal(item, bestMarketIndex);
+                    return `
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2.5 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
+                            <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
+                                <input type="checkbox" checked onchange="toggleItemCheck('${item.id}')"
+                                       class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
+                                <span class="text-xs font-semibold text-slate-400 line-through break-words leading-snug flex-1">${item.name}</span>
+                            </div>
+                            <div class="flex items-center justify-between w-full sm:w-auto gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                                <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200">
+                                    ${item.qty} ${item.unit}
+                                </button>
+                                <div class="text-right w-16">
+                                    <span class="text-xs font-bold text-slate-400">€ ${subtotal.toFixed(2)}</span>
+                                </div>
+                                <button onclick="deleteItem('${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                            </div>
                         </div>
-                        <button onclick="deleteItem('${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    `;
+                }).join('');
+
+                cartContainer.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden opacity-85">
+                        <div class="p-3.5 bg-slate-50/70 flex justify-between items-center border-b border-slate-100">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+                                    <i class="fa-solid ${MACRO_META[catName].icon}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xs text-slate-800">${catName}</h3>
+                                    <p class="text-[10px] text-slate-400">${catItems.length} nel carrello</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-2">
+                            ${itemsHtml}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            });
+
+            if (!hasCart) {
+                cartContainer.innerHTML = `<div class="bg-white rounded-2xl p-4 text-center text-xs text-slate-400 border border-slate-100">Il carrello è vuoto.</div>`;
+            }
         }
 
         function renderFooterTotal() {
@@ -630,9 +750,15 @@
         }
 
         // --- AZIONI UTENTE ---
+        function toggleCategory(catName) {
+            appState.expandedCategories[catName] = !appState.expandedCategories[catName];
+            saveLocalState();
+            renderMacroGroupsLists();
+        }
+
         function filterItems(query) {
             appState.searchQuery = query;
-            renderItemsLists();
+            renderMacroGroupsLists();
         }
 
         function updateComune(val) {
@@ -659,7 +785,7 @@
         }
 
         function clearPendingList() {
-            if (!confirm("Vuoi svuotare tutti i prodotti della lista da acquistare?")) return;
+            if (!confirm("Vuoi svuotare tutti i prodotti non ancora acquistati?")) return;
             appState.items = appState.items.filter(i => i.checked);
             saveLocalState();
             renderApp();
@@ -778,7 +904,7 @@
         function initFirebase(url, room) {
             try {
                 if (!firebase.apps.length) firebase.initializeApp({ databaseURL: url });
-                firebaseRef = firebase.database().ref('spesasmart_v2/' + room);
+                firebaseRef = firebase.database().ref('spesasmart_v5/' + room);
                 firebaseRef.on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data && data.items) {
@@ -802,7 +928,7 @@
         }
 
         function disconnectFirebase() {
-            localStorage.removeItem('spesaSmartFirebaseUrl');
+            localStorage.removeItem('spesSmartFirebaseUrl');
             localStorage.removeItem('spesaSmartFirebaseRoom');
             if (firebaseRef) firebaseRef.off();
             firebaseRef = null;
