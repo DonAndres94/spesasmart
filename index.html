@@ -951,7 +951,7 @@
             XLSX.writeFile(wb, "Modello_SpesaSmart.xlsx");
         }
 
-        function handleFileImport(e) {
+function handleFileImport(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -960,22 +960,50 @@
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
                     const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                    
                     json.forEach(row => {
-                        appState.items.push({
-                            id: 'imp_' + Math.random().toString(36).substring(2, 9),
-                            name: row.Prodotto || row.Item,
-                            qty: parseFloat(row.Quantita || 1),
-                            unit: row.Unita || 'pz',
-                            category: row.Reparto || 'Dispensa & Colazione',
-                            checked: false
-                        });
+                        const name = row.Prodotto || row.prodotto || row.Item || row.item;
+                        const qty = parseFloat(row.Quantita || row.quantità || row.Qty || 1);
+                        const unit = row.Unita || row.unità || row.Unit || 'pz';
+                        let category = row.Reparto || row.reparto || row.Category || row.category;
+
+                        // Riconoscimento automatico intelligente del reparto se manca nel file
+                        if (!category || !MACRO_META[category]) {
+                            category = detectCategoryByName(name);
+                        }
+
+                        if (name) {
+                            appState.items.push({
+                                id: 'imp_' + Math.random().toString(36).substring(2, 9),
+                                name: name,
+                                qty: isNaN(qty) ? 1 : qty,
+                                unit: unit,
+                                category: category,
+                                checked: false
+                            });
+                        }
                     });
                     saveLocalState();
                     renderApp();
-                    alert("Importato con successo!");
-                } catch(err) { alert("Errore file."); }
+                    alert("File importato con successo!");
+                } catch(err) { 
+                    console.error(err);
+                    alert("Errore durante la lettura del file."); 
+                }
             };
             reader.readAsArrayBuffer(file);
+        }
+
+        // Funzione di supporto per l'assegnazione automatica del reparto
+        function detectCategoryByName(name) {
+            if (!name) return "Dispensa & Colazione";
+            const n = name.toLowerCase();
+            if (n.includes("latte") || n.includes("mozzarella") || n.includes("formaggio") || n.includes("yogurt") || n.includes("burro") || n.includes("parmigiano") || n.includes("ricotta")) return "Frigo & Latticini";
+            if (n.includes("mela") || n.includes("banana") || n.includes("frutta") || n.includes("verdura") || n.includes("insalata") || n.includes("patate") || n.includes("carote") || (n.includes("pomodoro") && !n.includes("passata"))) return "Ortofrutta";
+            if (n.includes("pollo") || n.includes("carne") || n.includes("macinata") || n.includes("pesce") || n.includes("salmone") || n.includes("bistecca") || n.includes("hamburger")) return "Carne & Pesce";
+            if (n.includes("acqua") || n.includes("bibita") || n.includes("vino") || n.includes("succo") || n.includes("birra") || n.includes("cola") || n.includes("coca")) return "Bevande";
+            if (n.includes("detersivo") || n.includes("carta") || n.includes("sapone") || n.includes("shampoo") || n.includes("candeggina") || n.includes("igienica") || n.includes("lavatrice")) return "Casa & Igiene";
+            return "Dispensa & Colazione";
         }
     </script>
 </body>
