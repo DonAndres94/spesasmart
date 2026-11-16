@@ -1005,8 +1005,8 @@ function handleFileImport(e) {
             if (n.includes("detersivo") || n.includes("carta") || n.includes("sapone") || n.includes("shampoo") || n.includes("candeggina") || n.includes("igienica") || n.includes("lavatrice")) return "Casa & Igiene";
             return "Dispensa & Colazione";
         }
-    </script>
-    function clearPendingList() {
+    <script>
+function clearPendingList() {
     if (!confirm("Sei sicuro di voler svuotare la lista?")) return;
 
     // Invia la rimozione al database Firebase della stanza attiva
@@ -1025,6 +1025,8 @@ function handleFileImport(e) {
     if (typeof renderShoppingList === 'function') {
         renderShoppingList();
     }
+}
+</script>
 }
 </body>
 </html>
