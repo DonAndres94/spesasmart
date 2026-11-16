@@ -88,7 +88,7 @@
                 <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
                     <i class="fa-solid fa-trophy text-amber-500"></i> Migliori Supermercati per la tua spesa
                 </h2>
-                <span class="text-[11px] text-slate-400" id="comuneDisplayLabel">In base al comune</span>
+                <span class="text-[11px] text-emerald-600 font-bold" id="comuneDisplayLabel">Comune: Roma</span>
             </div>
             <div id="podiumContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <!-- Generato da JS -->
@@ -281,28 +281,49 @@
     </div>
 
     <script>
-        // --- CONFIGURAZIONE E LISTINO SUPERMERCATI REALI ---
-        const SUPERMARKETS = [
-            { id: "eurospin", name: "Eurospin", type: "discount", index: 0.85, color: "emerald", url: "https://www.eurospin.it/volantino/" },
-            { id: "lidl", name: "Lidl", type: "discount", index: 0.88, color: "blue", url: "https://www.lidl.it/volantini" },
-            { id: "todis", name: "Todis", type: "discount", index: 0.89, color: "red", url: "https://www.todis.it/volantino/" },
-            { id: "md", name: "MD Spa", type: "discount", index: 0.87, color: "amber", url: "https://www.mdspa.it/volantino" },
-            { id: "conad", name: "Conad", type: "superstore", index: 1.05, color: "red", url: "https://www.conad.it/volantini" },
-            { id: "esselunga", name: "Esselunga", type: "superstore", index: 1.02, color: "red", url: "https://www.esselunga.it/it-it/volantino.html" },
-            { id: "coop", name: "Coop", type: "superstore", index: 1.06, color: "red", url: "https://www.e-coop.it/volantini" },
-            { id: "carrefour", name: "Carrefour", type: "superstore", index: 1.04, color: "blue", url: "https://www.carrefour.it/volantino/" },
-            { id: "pam", name: "Pam", type: "superstore", index: 1.03, color: "red", url: "https://www.pampanorama.it/volantino" },
-            { id: "despar", name: "Despar", type: "superstore", index: 1.05, color: "emerald", url: "https://www.despar.it/it/volantini/" },
-            { id: "crai", name: "Crai", type: "supermarket", index: 1.08, color: "red", url: "https://www.crai.it/volantini" },
-            { id: "ma", name: "MA Supermercati", type: "supermarket", index: 0.90, color: "blue", url: "https://www.masupermercati.it/" },
-            { id: "iperdem", name: "IperDem", type: "supermarket", index: 0.92, color: "blue", url: "https://www.iperdem.it/" },
-            { id: "castoro", name: "Il Castoro", type: "supermarket", index: 0.95, color: "orange", url: "https://www.spesilcastoro.it/" },
-            { id: "tigre", name: "Tigre", type: "supermarket", index: 1.01, color: "orange", url: "https://www.tigre-supermercati.it/volantino" },
-            { id: "penny", name: "Penny", type: "discount", index: 0.88, color: "violet", url: "https://www.penny.it/volantino" },
-            { id: "ipercoop", name: "Ipercoop", type: "iperm", index: 1.04, color: "red", url: "https://www.e-coop.it/" }
+        // --- CONFIGURAZIONE SUPERMERCATI CON FILTRO GEOGRAFICO ---
+        const ALL_SUPERMARKETS = [
+            // Nazionali / Diffusi ovunque
+            { id: "eurospin", name: "Eurospin", type: "discount", index: 0.85, color: "emerald", url: "https://www.eurospin.it/volantino/", zones: ["nord", "centro", "sud", "isole"] },
+            { id: "lidl", name: "Lidl", type: "discount", index: 0.88, color: "blue", url: "https://www.lidl.it/volantini", zones: ["nord", "centro", "sud", "isole"] },
+            { id: "conad", name: "Conad", type: "superstore", index: 1.05, color: "red", url: "https://www.conad.it/volantini", zones: ["nord", "centro", "sud", "isole"] },
+            { id: "coop", name: "Coop", type: "superstore", index: 1.06, color: "red", url: "https://www.e-coop.it/volantini", zones: ["nord", "centro", "sud"] },
+            { id: "carrefour", name: "Carrefour", type: "superstore", index: 1.04, color: "blue", url: "https://www.carrefour.it/volantino/", zones: ["nord", "centro", "sud"] },
+            { id: "esselunga", name: "Esselunga", type: "superstore", index: 1.02, color: "red", url: "https://www.esselunga.it/it-it/volantino.html", zones: ["nord", "centro"] },
+            { id: "penny", name: "Penny", type: "discount", index: 0.88, color: "violet", url: "https://www.penny.it/volantino", zones: ["nord", "centro"] },
+            { id: "md", name: "MD Spa", type: "discount", index: 0.87, color: "amber", url: "https://www.mdspa.it/volantino", zones: ["centro", "sud", "isole", "nord"] },
+            { id: "despar", name: "Despar", type: "superstore", index: 1.05, color: "emerald", url: "https://www.despar.it/it/volantini/", zones: ["nord", "centro", "sud"] },
+            { id: "pam", name: "Pam", type: "superstore", index: 1.03, color: "red", url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"] },
+            
+            // Specifici Centro / Roma / Lazio
+            { id: "todis", name: "Todis", type: "discount", index: 0.89, color: "red", url: "https://www.todis.it/volantino/", zones: ["centro", "sud"] },
+            { id: "ma", name: "MA Supermercati", type: "supermarket", index: 0.90, color: "blue", url: "https://www.masupermercati.it/", zones: ["centro"] },
+            { id: "iperdem", name: "IperDem", type: "supermarket", index: 0.92, color: "blue", url: "https://www.iperdem.it/", zones: ["centro"] },
+            { id: "castoro", name: "Il Castoro", type: "supermarket", index: 0.95, color: "orange", url: "https://www.spesilcastoro.it/", zones: ["centro"] },
+            { id: "tigre", name: "Tigre", type: "supermarket", index: 1.01, color: "orange", url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"] },
+            { id: "crai", name: "Crai", type: "supermarket", index: 1.08, color: "red", url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"] },
+            { id: "ipercoop", name: "Ipercoop", type: "iperm", index: 1.04, color: "red", url: "https://www.e-coop.it/", zones: ["nord", "centro"] }
         ];
 
-        // Listino prezzi base realistici per unità di misura standard (al kg, al L o cad.)
+        // Funzione per determinare la zona geografica in base al comune inserito
+        function getZoneByComune(comune) {
+            const c = comune.toLowerCase().trim();
+            const nord = ["milano", "torino", "venezia", "bologna", "genova", "firenze", "verona", "padova", "brescia", "parma", "trieste", "bergamo", "monza"];
+            const sud = ["napoli", "bari", "palermo", "catania", "messina", "taranto", "reggio calabria", "foggia", "salerno", "lecce", "cagliari", "sassari"];
+            
+            if (nord.some(city => c.includes(city))) return "nord";
+            if (sud.some(city => c.includes(city))) return "sud";
+            // Default di fallback (Roma e centro Italia)
+            return "centro";
+        }
+
+        // Restituisce i supermercati attivi filtrati per zona
+        function getActiveSupermarkets() {
+            const zone = getZoneByComune(appState.comune);
+            return ALL_SUPERMARKETS.filter(m => m.zones.includes(zone));
+        }
+
+        // Listino prezzi base realistici
         const BASE_PRICES = {
             "Pasta di semola 500g": { base: 0.95, unit: "conf", refUnit: "conf" },
             "Passata di pomodoro 700g": { base: 1.15, unit: "conf", refUnit: "conf" },
@@ -417,7 +438,8 @@
         }
 
         function getBestSupermarketForCart() {
-            let totals = SUPERMARKETS.map(market => {
+            const activeMarkets = getActiveSupermarkets();
+            let totals = activeMarkets.map(market => {
                 let sum = 0;
                 for (let cat in appState.categories) {
                     appState.categories[cat].items.forEach(item => {
@@ -442,6 +464,11 @@
             const top3 = rankings.slice(0, 3);
             const container = document.getElementById('podiumContainer');
             container.innerHTML = '';
+
+            if (top3.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 col-span-3 text-center py-2">Nessun supermercato trovato per questo comune.</p>`;
+                return;
+            }
 
             top3.forEach((item, idx) => {
                 const badgeColors = ['bg-amber-100 text-amber-800 border-amber-300', 'bg-slate-100 text-slate-700 border-slate-300', 'bg-orange-100 text-orange-800 border-orange-300'];
@@ -572,6 +599,7 @@
             appState.comune = val.trim();
             document.getElementById('comuneDisplayLabel').innerText = `Comune: ${appState.comune}`;
             saveLocalState();
+            renderApp();
         }
 
         function toggleItemCheck(catName, itemId) {
@@ -589,7 +617,6 @@
             renderApp();
         }
 
-        // Funzione per ripulire tutti gli elementi non spuntati (quelli non acquistati)
         function clearUncheckedItems() {
             if (!confirm("Vuoi eliminare tutti i prodotti non spuntati dalla lista?")) return;
             for (let cat in appState.categories) {
