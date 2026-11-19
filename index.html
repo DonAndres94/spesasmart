@@ -1009,23 +1009,17 @@ function handleFileImport(e) {
 
     // Funzione per pulire la lista e sincronizzarla su Firebase
     function clearPendingList() {
-        if (!confirm("Sei sicuro di voler svuotare la lista?")) return;
+        if (!confirm("Sei sicuro di voler svuotare la lista da acquistare?")) return;
 
-        // Invia la rimozione al database Firebase della stanza attiva
-        if (typeof currentRoomId !== 'undefined' && currentRoomId) {
-            database.ref('rooms/' + currentRoomId + '/items').remove()
-                .then(() => {
-                    console.log("Lista pulita anche su Firebase");
-                })
-                .catch((error) => {
-                    console.error("Errore pulizia Firebase:", error);
-                });
+        if (typeof appState !== 'undefined' && Array.isArray(appState.items)) {
+            appState.items = appState.items.filter(item => item.checked);
         }
 
-        // Pulisci la vista locale dello schermo
-        localItems = [];
-        if (typeof renderShoppingList === 'function') {
-            renderShoppingList();
+        if (typeof saveLocalState === 'function') {
+            saveLocalState();
+        }
+        if (typeof renderApp === 'function') {
+            renderApp();
         }
     }
 </script>
