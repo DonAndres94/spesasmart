@@ -164,7 +164,7 @@
         </div>
     </div>
 
-    <!-- Modale Modifica Quantità e Prezzo -->
+    <!-- Modale Modifica Confezioni, Grammi e Prezzo -->
     <div id="qtyModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
@@ -173,28 +173,25 @@
             </div>
             <div class="space-y-3">
                 <div>
-                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Tipo di Misura</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="typeQtyBtn" onclick="setModalUnitType('qty')" class="py-2 text-xs font-bold rounded-xl border transition">Quantità (Pezzi)</button>
-                        <button type="button" id="typeWeightBtn" onclick="setModalUnitType('weight')" class="py-2 text-xs font-bold rounded-xl border transition">Peso / Volume</button>
-                    </div>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-slate-500 mb-1 block" id="modalValueLabel">Valore</label>
+                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Confezioni (Unità)</label>
                     <div class="flex items-center gap-2">
-                        <button onclick="adjustModalValue(-1)" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center justify-center"><i class="fa-solid fa-minus"></i></button>
-                        <input type="number" id="modalValueInput" class="flex-1 text-center py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" step="any">
-                        <button onclick="adjustModalValue(1)" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
+                        <button type="button" onclick="adjustModalValue(-1)" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center justify-center"><i class="fa-solid fa-minus"></i></button>
+                        <input type="number" id="modalValueInput" class="flex-1 text-center py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" step="1" min="1">
+                        <button type="button" onclick="adjustModalValue(1)" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Unità di Misura</label>
-                    <select id="modalUnitSelect" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none"></select>
+                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Peso per Confezione (grammi - Quantità)</label>
+                    <input type="number" id="modalGramsInput" step="1" min="1" placeholder="es. 500" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
-                <div id="modalQuickButtons" class="flex gap-1.5 flex-wrap pt-1"></div>
+                <div id="modalQuickButtons" class="flex gap-1.5 flex-wrap pt-1">
+                    <button type="button" onclick="setQuickGrams(250)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">250g</button>
+                    <button type="button" onclick="setQuickGrams(500)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">500g</button>
+                    <button type="button" onclick="setQuickGrams(1000)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1000g</button>
+                </div>
                 <div class="pt-1 border-t border-slate-100">
                     <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-semibold text-slate-500">Prezzo Unitario Reale (€ / pz, kg o L)</label>
+                        <label class="text-xs font-semibold text-slate-500">Prezzo a Confezione € (opzionale)</label>
                         <button type="button" onclick="resetModalCustomPrice()" class="text-[10px] text-rose-600 hover:underline font-semibold">Usa stima catalogo</button>
                     </div>
                     <input type="number" id="modalPriceInput" step="0.01" min="0" placeholder="Lascia vuoto per stima automatica" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -233,23 +230,16 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-slate-500 mb-1 block">Quantità / Peso</label>
+                        <label class="text-xs font-semibold text-slate-500 mb-1 block">Confezioni / Grammi</label>
                         <div class="flex gap-1">
-                            <input type="number" id="addQtyInput" value="1" step="any" class="w-16 py-2 px-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold">
-                            <select id="addUnitSelect" class="flex-1 py-2 px-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-                                <option value="pz">pz</option>
-                                <option value="conf">conf</option>
-                                <option value="kg">kg</option>
-                                <option value="g">g</option>
-                                <option value="L">L</option>
-                                <option value="ml">ml</option>
-                                <option value="bott">bott</option>
-                            </select>
+                            <input type="number" id="addPacksInput" value="1" min="1" step="1" title="Numero confezioni (Unità)" class="w-14 py-2 px-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold">
+                            <input type="number" id="addGramsInput" value="500" min="1" step="1" title="Peso in grammi (Quantità)" class="flex-1 py-2 px-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold">
+                            <span class="flex items-center text-[11px] font-bold text-slate-500 px-1">g</span>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Prezzo Unitario € (opzionale)</label>
+                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Prezzo a Confezione € (opzionale)</label>
                     <input type="number" id="addPriceInput" step="0.01" min="0" placeholder="Automatico dal catalogo se vuoto" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
             </div>
@@ -305,6 +295,7 @@
         // --- ARCHIVIO COORDINATE CITTÀ ---
         const CITY_COORDINATES = {
             "roma": { lat: 41.9028, lon: 12.4964, zone: "centro" },
+            "tivoli": { lat: 41.9642, lon: 12.7989, zone: "centro" },
             "milano": { lat: 45.4642, lon: 9.1900, zone: "nord" },
             "napoli": { lat: 40.8518, lon: 14.2681, zone: "sud" },
             "torino": { lat: 45.0703, lon: 7.6869, zone: "nord" },
@@ -338,8 +329,8 @@
             { id: "pam", name: "Pam", type: "Superstore", url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"], dLat: 0.01, dLon: 0.04 },
             { id: "todis", name: "Todis", type: "Discount", url: "https://www.todis.it/volantino/", zones: ["centro", "sud"], dLat: -0.02, dLon: -0.05 },
             { id: "ma", name: "MA Supermercati", type: "Supermercato", url: "https://www.masupermercati.it/", zones: ["centro"], dLat: 0.03, dLon: -0.01 },
-            { id: "iperdem", name: "IperDem", type: "Supermercato", url: "https://www.iperdem.it/", zones: ["centro"], dLat: -0.01, dLon: -0.03 },
-            { id: "castoro", name: "Il Castoro", type: "Supermercato", url: "https://www.spesilcastoro.it/", zones: ["centro"], dLat: 0.02, dLon: 0.02 },
+            { id: "iperdem", name: "IperDem", type: "Supermercato", url: "https://www.supermercatidem.com/volantino/", zones: ["centro"], dLat: -0.01, dLon: -0.03 },
+            { id: "castoro", name: "Il Castoro", type: "Supermercato", url: "https://ilcastorosupermercati.it/promozioni/volantino/", zones: ["centro"], dLat: 0.02, dLon: 0.02 },
             { id: "tigre", name: "Tigre", type: "Supermercato", url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"], dLat: -0.04, dLon: 0.02 },
             { id: "crai", name: "Crai", type: "Supermercato", url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: -0.03 }
         ];
@@ -523,14 +514,14 @@
         };
 
         const INITIAL_ITEMS = [
-            { id: "1", name: "Pasta di semola 500g", qty: 2, unit: "conf", category: "Dispensa & Colazione", checked: false },
-            { id: "2", name: "Passata di pomodoro 700g", qty: 2, unit: "conf", category: "Dispensa & Colazione", checked: false },
-            { id: "3", name: "Olio extravergine d'oliva 1L", qty: 1, unit: "L", category: "Dispensa & Colazione", checked: false },
-            { id: "4", name: "Latte intero fresco 1L", qty: 2, unit: "L", category: "Frigo & Latticini", checked: false },
-            { id: "5", name: "Mozzarella di bufala 125g", qty: 3, unit: "pz", category: "Frigo & Latticini", checked: false },
-            { id: "6", name: "Mele Golden 1kg", qty: 1.5, unit: "kg", category: "Ortofrutta", checked: false },
-            { id: "7", name: "Petto di pollo intero 1kg", qty: 0.6, unit: "kg", category: "Carne & Pesce", checked: false },
-            { id: "8", name: "Acqua naturale 1.5L (pack 6)", qty: 2, unit: "conf", category: "Bevande", checked: false }
+            { id: "1", name: "Pasta di semola", packs: 2, grams: 500, category: "Dispensa & Colazione", checked: false },
+            { id: "2", name: "Passata di pomodoro", packs: 2, grams: 700, category: "Dispensa & Colazione", checked: false },
+            { id: "3", name: "Olio extravergine d'oliva", packs: 1, grams: 1000, category: "Dispensa & Colazione", checked: false },
+            { id: "4", name: "Latte intero fresco", packs: 2, grams: 1000, category: "Frigo & Latticini", checked: false },
+            { id: "5", name: "Mozzarella di bufala", packs: 3, grams: 125, category: "Frigo & Latticini", checked: false },
+            { id: "6", name: "Mele Golden", packs: 1, grams: 1500, category: "Ortofrutta", checked: false },
+            { id: "7", name: "Petto di pollo intero", packs: 1, grams: 600, category: "Carne & Pesce", checked: false },
+            { id: "8", name: "Acqua naturale", packs: 2, grams: 1500, category: "Bevande", checked: false }
         ];
 
         let appState = {
@@ -560,21 +551,48 @@
             checkAutoFirebase();
         });
 
+        function normalizeItemRecord(raw) {
+            const packs = Math.max(1, parseInt(raw.packs ?? raw.qty ?? 1, 10) || 1);
+            const grams = Math.max(1, parseFloat(raw.grams ?? 500) || 500);
+            return {
+                id: raw.id || ('item_' + Math.random().toString(36).substring(2, 9)),
+                name: String(raw.name || "").trim(),
+                packs,
+                grams,
+                category: MACRO_META[raw.category] ? raw.category : detectCategoryByName(raw.name),
+                checked: Boolean(raw.checked),
+                customPrice: (typeof raw.customPrice === 'number' && raw.customPrice > 0) ? raw.customPrice : undefined
+            };
+        }
+
         function saveLocalState() {
-            localStorage.setItem('spesaSmartStateV5', JSON.stringify(appState));
+            localStorage.setItem('spesaSmartStateV6', JSON.stringify(appState));
             if (isSyncing && firebaseRef) {
                 firebaseRef.set(appState);
             }
         }
 
         function loadLocalState() {
-            const saved = localStorage.getItem('spesaSmartStateV5');
+            const saved = localStorage.getItem('spesaSmartStateV6') || localStorage.getItem('spesaSmartStateV5');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     appState = { ...appState, ...parsed };
                     if (!appState.customPrices) appState.customPrices = {};
-                } catch(e) {}
+                    if (!appState.expandedCategories) {
+                        appState.expandedCategories = {
+                            "Dispensa & Colazione": true,
+                            "Frigo & Latticini": true,
+                            "Ortofrutta": true,
+                            "Carne & Pesce": true,
+                            "Bevande": true,
+                            "Casa & Igiene": true
+                        };
+                    }
+                    if (Array.isArray(parsed.items)) {
+                        appState.items = parsed.items.map(normalizeItemRecord).filter(i => i.name);
+                    }
+                } catch(e) { console.error(e); }
             }
             const savedFb = localStorage.getItem('spesaSmartFirebaseUrl');
             const savedRoom = localStorage.getItem('spesaSmartFirebaseRoom');
@@ -622,7 +640,7 @@
                 .sort((a, b) => a.distance - b.distance);
         }
 
-        function findCatalogBasePrice(item) {
+        function findCatalogPackPrice(item) {
             if (!item || !item.name) return 1.80;
             const normName = item.name.toLowerCase().trim();
 
@@ -641,18 +659,23 @@
             if (partialKey) return BASE_PRICES[partialKey].base;
 
             const catRates = CATEGORY_FALLBACK_PRICES[item.category] || { unit: 1.80, kg: 3.50, L: 2.00 };
-            if (item.unit === "kg" || item.unit === "g") return catRates.kg;
-            if (item.unit === "L" || item.unit === "ml") return catRates.L;
-            return catRates.unit;
+            const grams = parseFloat(item.grams) || 500;
+            return (catRates.kg * grams) / 1000;
         }
 
         function calculateItemSubtotal(item) {
-            let multiplier = (item.unit === 'g' || item.unit === 'ml') ? item.qty / 1000 : item.qty;
+            const packs = Math.max(1, parseInt(item.packs, 10) || 1);
             if (typeof item.customPrice === 'number' && !isNaN(item.customPrice) && item.customPrice > 0) {
-                return item.customPrice * multiplier;
+                return item.customPrice * packs;
             }
-            const basePrice = findCatalogBasePrice(item);
-            return basePrice * multiplier;
+            const packPrice = findCatalogPackPrice(item);
+            return packPrice * packs;
+        }
+
+        function formatItemMeasure(item) {
+            const packs = Math.max(1, parseInt(item.packs, 10) || 1);
+            const grams = parseFloat(item.grams) || 500;
+            return `${packs} conf (${grams}g)`;
         }
 
         function renderApp() {
@@ -704,7 +727,7 @@
             let hasPending = false;
             categories.forEach(catName => {
                 const catItems = pendingItems.filter(i => (i.category || 'Dispensa & Colazione') === catName);
-                if (catItems.length === 0 && appState.searchQuery) return;
+                if (catItems.length === 0) return;
                 hasPending = true;
 
                 const isExpanded = appState.expandedCategories[catName] !== false;
@@ -723,7 +746,7 @@
                             </div>
                             <div class="flex items-center justify-between w-full sm:w-auto gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                                 <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 transition">
-                                    ${item.qty} ${item.unit}
+                                    ${formatItemMeasure(item)}
                                 </button>
                                 <button onclick="openQtyModal('${item.id}', true)" title="Clicca per modificare il prezzo" class="text-right min-w-[4.5rem] px-2 py-1 rounded-lg hover:bg-emerald-50 transition ${hasCustom ? 'text-emerald-700 font-extrabold bg-emerald-50/60' : 'text-slate-800 font-bold'}">
                                     <span class="text-xs">€ ${subtotal.toFixed(2)}</span>
@@ -752,7 +775,7 @@
                             </div>
                         </div>
                         <div class="px-2 ${isExpanded ? 'block' : 'hidden'}">
-                            ${itemsHtml || '<p class="text-xs text-slate-400 py-3 text-center">Nessun prodotto</p>'}
+                            ${itemsHtml}
                         </div>
                     </div>
                 `;
@@ -780,7 +803,7 @@
                             </div>
                             <div class="flex items-center justify-between w-full sm:w-auto gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                                 <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200">
-                                    ${item.qty} ${item.unit}
+                                    ${formatItemMeasure(item)}
                                 </button>
                                 <button onclick="openQtyModal('${item.id}', true)" class="text-right min-w-[4.5rem] px-2 py-1">
                                     <span class="text-xs font-bold text-slate-400">€ ${subtotal.toFixed(2)}</span>
@@ -873,25 +896,23 @@
             renderApp();
         }
 
-        // --- QUANTITÀ E PREZZO MODALE ---
+        // --- QUANTITÀ (GRAMMI), UNITÀ (CONFEZIONI) E PREZZO MODALE ---
         function openQtyModal(itemId, focusPrice = false) {
             activeQtyEdit = itemId;
             const item = appState.items.find(i => i.id === itemId);
             if (!item) return;
 
-            document.getElementById('modalItemTitle').innerText = `Modifica: ${item.name}`;
-            document.getElementById('modalValueInput').value = item.qty;
+            const packs = Math.max(1, parseInt(item.packs, 10) || 1);
+            const grams = parseFloat(item.grams) || 500;
 
-            if (['g', 'kg', 'ml', 'L'].includes(item.unit)) {
-                setModalUnitType('weight', item.unit);
-            } else {
-                setModalUnitType('qty', item.unit);
-            }
+            document.getElementById('modalItemTitle').innerText = `Modifica: ${item.name}`;
+            document.getElementById('modalValueInput').value = packs;
+            document.getElementById('modalGramsInput').value = grams;
 
             const priceInput = document.getElementById('modalPriceInput');
             const hintEl = document.getElementById('modalEstimatedPriceHint');
-            const estBase = findCatalogBasePrice({ ...item, customPrice: null });
-            hintEl.innerText = `Stima media catalogo: € ${estBase.toFixed(2)} per ${item.unit === 'g' ? 'kg' : (item.unit === 'ml' ? 'L' : item.unit)}`;
+            const estPack = findCatalogPackPrice({ ...item, customPrice: null });
+            hintEl.innerText = `Stima media catalogo: € ${estPack.toFixed(2)} per confezione da ${grams}g`;
 
             if (typeof item.customPrice === 'number' && item.customPrice > 0) {
                 priceInput.value = item.customPrice.toFixed(2);
@@ -913,51 +934,24 @@
             document.getElementById('modalPriceInput').value = '';
         }
 
-        function setModalUnitType(type, forceUnit = null) {
-            const unitSelect = document.getElementById('modalUnitSelect');
-            const quickBtns = document.getElementById('modalQuickButtons');
-            unitSelect.innerHTML = '';
-            const qtyBtn = document.getElementById('typeQtyBtn');
-            const weightBtn = document.getElementById('typeWeightBtn');
-
-            if (type === 'qty') {
-                qtyBtn.className = "py-2 text-xs font-bold rounded-xl border bg-emerald-600 text-white border-emerald-600 shadow-xs";
-                weightBtn.className = "py-2 text-xs font-bold rounded-xl border bg-slate-50 text-slate-600 border-slate-200";
-                document.getElementById('modalValueLabel').innerText = "Quantità (Pezzi)";
-                ['pz', 'conf', 'bott'].forEach(u => {
-                    unitSelect.innerHTML += `<option value="${u}" ${forceUnit === u ? 'selected' : ''}>${u}</option>`;
-                });
-                quickBtns.innerHTML = `<button type="button" onclick="setQuickVal(1)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1</button><button type="button" onclick="setQuickVal(2)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">2</button><button type="button" onclick="setQuickVal(3)" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">3</button>`;
-            } else {
-                weightBtn.className = "py-2 text-xs font-bold rounded-xl border bg-emerald-600 text-white border-emerald-600 shadow-xs";
-                qtyBtn.className = "py-2 text-xs font-bold rounded-xl border bg-slate-50 text-slate-600 border-slate-200";
-                document.getElementById('modalValueLabel').innerText = "Peso o Volume";
-                ['g', 'kg', 'ml', 'L'].forEach(u => {
-                    unitSelect.innerHTML += `<option value="${u}" ${forceUnit === u ? 'selected' : ''}>${u}</option>`;
-                });
-                quickBtns.innerHTML = `<button type="button" onclick="setQuickVal(500, 'g')" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">500g</button><button type="button" onclick="setQuickVal(1, 'kg')" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1 kg</button><button type="button" onclick="setQuickVal(1, 'L')" class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold">1 L</button>`;
-            }
-        }
-
         function adjustModalValue(amount) {
             const input = document.getElementById('modalValueInput');
-            let val = parseFloat(input.value) || 0;
-            input.value = Math.max(0.1, Number((val + amount).toFixed(2)));
+            let val = parseInt(input.value, 10) || 1;
+            input.value = Math.max(1, val + amount);
         }
 
-        function setQuickVal(val, unit = null) {
-            document.getElementById('modalValueInput').value = val;
-            if (unit) document.getElementById('modalUnitSelect').value = unit;
+        function setQuickGrams(grams) {
+            document.getElementById('modalGramsInput').value = grams;
         }
 
         function saveItemQty() {
             const item = appState.items.find(i => i.id === activeQtyEdit);
             if (item) {
-                item.qty = parseFloat(document.getElementById('modalValueInput').value) || 1;
-                item.unit = document.getElementById('modalUnitSelect').value;
+                item.packs = Math.max(1, parseInt(document.getElementById('modalValueInput').value, 10) || 1);
+                item.grams = Math.max(1, parseFloat(document.getElementById('modalGramsInput').value) || 500);
 
                 const rawPrice = document.getElementById('modalPriceInput').value.trim();
-                const parsedPrice = parseFloat(rawPrice);
+                const parsedPrice = parseFloat(rawPrice.replace(',', '.'));
                 const normName = item.name.toLowerCase().trim();
 
                 if (rawPrice !== '' && !isNaN(parsedPrice) && parsedPrice > 0) {
@@ -978,6 +972,8 @@
         // --- AGGIUNGI PRODOTTO ---
         function openAddModal() {
             document.getElementById('addNameInput').value = '';
+            document.getElementById('addPacksInput').value = '1';
+            document.getElementById('addGramsInput').value = '500';
             document.getElementById('addPriceInput').value = '';
             document.getElementById('addModal').classList.remove('hidden');
         }
@@ -995,18 +991,18 @@
         function addNewItem() {
             const name = document.getElementById('addNameInput').value.trim();
             const category = document.getElementById('addCategorySelect').value;
-            const qty = parseFloat(document.getElementById('addQtyInput').value) || 1;
-            const unit = document.getElementById('addUnitSelect').value;
+            const packs = Math.max(1, parseInt(document.getElementById('addPacksInput').value, 10) || 1);
+            const grams = Math.max(1, parseFloat(document.getElementById('addGramsInput').value) || 500);
             const rawPrice = document.getElementById('addPriceInput').value.trim();
-            const parsedPrice = parseFloat(rawPrice);
+            const parsedPrice = parseFloat(rawPrice.replace(',', '.'));
 
             if (!name) return;
 
             const newItem = {
                 id: 'item_' + Date.now(),
                 name: name,
-                qty: qty,
-                unit: unit,
+                packs: packs,
+                grams: grams,
                 category: category,
                 checked: false
             };
@@ -1017,13 +1013,12 @@
                 appState.customPrices[name.toLowerCase().trim()] = parsedPrice;
             }
 
+            appState.expandedCategories[category] = true;
             appState.items.push(newItem);
 
             saveLocalState();
             renderApp();
             closeAddModal();
-            document.getElementById('addNameInput').value = '';
-            document.getElementById('addPriceInput').value = '';
         }
 
         // --- SYNC FIREBASE ---
@@ -1035,11 +1030,15 @@
         function initFirebase(url, room) {
             try {
                 if (!firebase.apps.length) firebase.initializeApp({ databaseURL: url });
-                firebaseRef = firebase.database().ref('spesasmart_v5/' + room);
+                firebaseRef = firebase.database().ref('spesasmart_v6/' + room);
                 firebaseRef.on('value', (snapshot) => {
                     const data = snapshot.val();
-                    if (data && data.items) {
-                        appState = { ...appState, ...data };
+                    if (data && Array.isArray(data.items)) {
+                        appState = {
+                            ...appState,
+                            ...data,
+                            items: data.items.map(normalizeItemRecord).filter(i => i.name)
+                        };
                         if (!appState.customPrices) appState.customPrices = {};
                         renderApp();
                     }
@@ -1075,58 +1074,93 @@
             if (url && room) initFirebase(url, room);
         }
 
-        // --- EXCEL ---
+        // --- EXCEL (3 COLONNE: Prodotto, Quantità [grammi], Unità [confezioni]) ---
         function downloadExcelTemplate() {
             const wb = XLSX.utils.book_new();
-            const wsData = [["Prodotto", "Quantita", "Unita", "Reparto", "Prezzo"], ["Pasta di semola 500g", 2, "conf", "Dispensa & Colazione", 0.95]];
+            const wsData = [
+                ["Prodotto", "Quantità", "Unità"],
+                ["Pasta di semola", 500, 2],
+                ["Petto di pollo", 600, 1]
+            ];
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), "Lista");
             XLSX.writeFile(wb, "Modello_SpesaSmart.xlsx");
         }
 
+        function getColumnValue(row, candidates) {
+            const keys = Object.keys(row || {});
+            for (const cand of candidates) {
+                const target = cand.toLowerCase().trim();
+                const foundKey = keys.find(k => k.toLowerCase().trim() === target);
+                if (foundKey !== undefined && row[foundKey] !== null && row[foundKey] !== undefined && String(row[foundKey]).trim() !== "") {
+                    return row[foundKey];
+                }
+            }
+            return undefined;
+        }
+
         function handleFileImport(e) {
-            const file = e.target.files[0];
+            const inputEl = e.target;
+            const file = inputEl.files && inputEl.files[0];
             if (!file) return;
+
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { defval: "" });
+
+                    let addedCount = 0;
+                    const touchedCategories = new Set();
+
                     json.forEach(row => {
-                        const name = row.Prodotto || row.prodotto || row.Item || row.item;
-                        const qty = parseFloat(row.Quantita || row.quantità || row.Qty || 1);
-                        const unit = row.Unita || row.unità || row.Unit || 'pz';
-                        let category = row.Reparto || row.reparto || row.Category || row.category;
-                        const rawPrice = parseFloat(row.Prezzo || row.prezzo || row.Price || row.price);
+                        const rawName = getColumnValue(row, ["Prodotto", "prodotto", "Item", "item"]);
+                        const name = rawName ? String(rawName).trim() : "";
+                        if (!name) return;
 
-                        if (!category || !MACRO_META[category]) {
-                            category = detectCategoryByName(name);
-                        }
+                        // Quantità = peso in grammi
+                        const rawGrams = getColumnValue(row, ["Quantità", "Quantita", "quantità", "quantita", "Qty", "qty"]);
+                        const parsedGrams = parseFloat(String(rawGrams ?? "").replace(",", "."));
+                        const grams = (!isNaN(parsedGrams) && parsedGrams > 0) ? parsedGrams : 500;
 
-                        if (name) {
-                            const importedItem = {
-                                id: 'imp_' + Math.random().toString(36).substring(2, 9),
-                                name: name,
-                                qty: isNaN(qty) ? 1 : qty,
-                                unit: unit,
-                                category: category,
-                                checked: false
-                            };
-                            if (!isNaN(rawPrice) && rawPrice > 0) {
-                                importedItem.customPrice = rawPrice;
-                                if (!appState.customPrices) appState.customPrices = {};
-                                appState.customPrices[String(name).toLowerCase().trim()] = rawPrice;
-                            }
-                            appState.items.push(importedItem);
-                        }
+                        // Unità = numero di confezioni
+                        const rawPacks = getColumnValue(row, ["Unità", "Unita", "unità", "unita", "Unit", "unit"]);
+                        const parsedPacks = parseInt(String(rawPacks ?? "").replace(",", "."), 10);
+                        const packs = (!isNaN(parsedPacks) && parsedPacks > 0) ? parsedPacks : 1;
+
+                        const category = detectCategoryByName(name);
+                        touchedCategories.add(category);
+
+                        appState.items.push({
+                            id: 'imp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                            name: name,
+                            packs: packs,
+                            grams: grams,
+                            category: category,
+                            checked: false
+                        });
+                        addedCount++;
                     });
-                    saveLocalState();
-                    renderApp();
-                    alert("File importato con successo!");
+
+                    if (addedCount > 0) {
+                        appState.searchQuery = "";
+                        const searchInput = document.getElementById('searchItemInput');
+                        if (searchInput) searchInput.value = "";
+                        touchedCategories.forEach(cat => {
+                            appState.expandedCategories[cat] = true;
+                        });
+                        saveLocalState();
+                        renderApp();
+                        alert(`Importati ${addedCount} prodotti in "Reparti - Da Acquistare".`);
+                    } else {
+                        alert("Nessun prodotto valido trovato. Controlla che ci sia la colonna 'Prodotto'.");
+                    }
                 } catch(err) { 
                     console.error(err);
                     alert("Errore durante la lettura del file."); 
+                } finally {
+                    inputEl.value = "";
                 }
             };
             reader.readAsArrayBuffer(file);
