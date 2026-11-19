@@ -14,19 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <!-- PWA Manifest dinamico -->
-    <link rel="manifest" href="data:application/manifest+json,{
-      'name': 'SpesaSmart',
-      'short_name': 'SpesaSmart',
-      'start_url': '.',
-      'display': 'standalone',
-      'background_color': '#f8fafc',
-      'theme_color': '#16a34a',
-      'icons': [{
-        'src': 'https://cdn-icons-png.flaticon.com/512/3720/3720518.png',
-        'sizes': '512x512',
-        'type': 'image/png'
-      }]
-    }">
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22SpesaSmart%22%2C%22short_name%22%3A%22SpesaSmart%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%2316a34a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F3720%2F3720518.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
       body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -44,7 +32,7 @@
                     </div>
                     <div>
                         <h1 class="text-lg font-bold tracking-tight">SpesaSmart</h1>
-                        <p class="text-xs text-emerald-100">Risparmio e volantini in tempo reale</p>
+                        <p class="text-xs text-emerald-100">Lista spesa e volantini in zona</p>
                     </div>
                 </div>
                 <!-- Pulsanti Azione Rapida Mobile -->
@@ -81,43 +69,27 @@
     <!-- Contenuto Principale -->
     <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- Sezione Podio Top 3 + Elenco Verticale con Distanza Reale -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Podio Top 3 -->
-            <div class="md:col-span-2 bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between">
+        <!-- Elenco Supermercati e Volantini con Filtro Zona -->
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                 <div>
-                    <div class="flex justify-between items-center mb-3">
-                        <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-trophy text-amber-500"></i> Podio Top 3 Supermercati
-                        </h2>
-                        <span class="text-[11px] text-emerald-600 font-bold" id="comuneDisplayLabel">Roma</span>
-                    </div>
-                    <div id="podiumContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <!-- Generato da JS -->
-                    </div>
-                </div>
-                <!-- Supermercato Selezionato -->
-                <div id="selectedMarketDetails" class="mt-4 pt-3 border-t border-slate-100 hidden">
-                    <!-- Generato da JS -->
-                </div>
-            </div>
-
-            <!-- Finestra Verticale Elenco Supermercati con Filtro Raggio Reale in km -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
-                <div class="flex justify-between items-center mb-2">
                     <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
-                        <i class="fa-solid fa-store text-emerald-600"></i> Negozi in Zona
+                        <i class="fa-solid fa-newspaper text-emerald-600"></i> Supermercati e Volantini — <span id="comuneDisplayLabel" class="text-emerald-600">Roma</span>
                     </h2>
-                    <select id="radiusSelect" onchange="renderMarketsList()" class="bg-slate-100 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg border border-slate-200 focus:outline-none">
+                    <p class="text-[11px] text-slate-400 mt-0.5">Filtra per distanza dal centro città e apri il volantino ufficiale di ciascun punto vendita.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="radiusSelect" class="text-[11px] font-semibold text-slate-500">Raggio zona:</label>
+                    <select id="radiusSelect" onchange="renderMarketsList()" class="bg-slate-100 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         <option value="5">Entro 5 km</option>
                         <option value="10" selected>Entro 10 km</option>
                         <option value="20">Entro 20 km</option>
                     </select>
                 </div>
-                <p class="text-[10px] text-slate-400 mb-2">Distanze calcolate dal centro città:</p>
-                <div id="marketsVerticalList" class="space-y-2 overflow-y-auto max-h-48 pr-1">
-                    <!-- Generato da JS -->
-                </div>
+            </div>
+
+            <div id="marketsVerticalList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-60 overflow-y-auto pr-1">
+                <!-- Generato da JS -->
             </div>
         </section>
 
@@ -182,20 +154,21 @@
     <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg z-30 p-3">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div>
-                <p class="text-[11px] text-slate-400 uppercase font-bold">Totale Stimato (Miglior Insegna)</p>
+                <p class="text-[11px] text-slate-400 uppercase font-bold">Totale Stimato Lista</p>
                 <p class="text-lg font-extrabold text-emerald-600" id="footerTotalAmount">€ 0,00</p>
             </div>
-            <div class="text-xs text-slate-500 font-medium">
-                Gestione Famiglia Sincronizzata
+            <div class="text-xs text-slate-500 font-medium text-right">
+                <p>Gestione Famiglia Sincronizzata</p>
+                <p class="text-[10px] text-slate-400">Tocca il prezzo di un articolo per personalizzarlo</p>
             </div>
         </div>
     </div>
 
-    <!-- Modale Modifica Quantità -->
+    <!-- Modale Modifica Quantità e Prezzo -->
     <div id="qtyModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="font-bold text-sm text-slate-800" id="modalItemTitle">Modifica Quantità</h3>
+                <h3 class="font-bold text-sm text-slate-800" id="modalItemTitle">Modifica Prodotto</h3>
                 <button onclick="closeQtyModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="space-y-3">
@@ -219,6 +192,14 @@
                     <select id="modalUnitSelect" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none"></select>
                 </div>
                 <div id="modalQuickButtons" class="flex gap-1.5 flex-wrap pt-1"></div>
+                <div class="pt-1 border-t border-slate-100">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-500">Prezzo Unitario Reale (€ / pz, kg o L)</label>
+                        <button type="button" onclick="resetModalCustomPrice()" class="text-[10px] text-rose-600 hover:underline font-semibold">Usa stima catalogo</button>
+                    </div>
+                    <input type="number" id="modalPriceInput" step="0.01" min="0" placeholder="Lascia vuoto per stima automatica" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <p class="text-[10px] text-slate-400 mt-1" id="modalEstimatedPriceHint"></p>
+                </div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closeQtyModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Annulla</button>
@@ -237,7 +218,7 @@
             <div class="space-y-3">
                 <div>
                     <label class="text-xs font-semibold text-slate-500 mb-1 block">Nome Prodotto</label>
-                    <input type="text" id="addNameInput" placeholder="es. Mozzarella di bufala" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="text" id="addNameInput" oninput="onAddNameInputChange(this.value)" placeholder="es. Mozzarella di bufala" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -267,6 +248,10 @@
                         </div>
                     </div>
                 </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-500 mb-1 block">Prezzo Unitario € (opzionale)</label>
+                    <input type="number" id="addPriceInput" step="0.01" min="0" placeholder="Automatico dal catalogo se vuoto" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closeAddModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Annulla</button>
@@ -286,7 +271,7 @@
                 <p class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-check"></i> Sincronizzazione in tempo reale
                 </p>
-                <p class="text-[11px] text-emerald-700">Configura lo stesso codice o URL Firebase sul telefono e sul PC per condividere la lista!</p>
+                <p class="text-[11px] text-emerald-700">Configura lo stesso codice o URL Firebase sul telefono e sul PC per condividere la lista e i prezzi personalizzati!</p>
             </div>
             <button onclick="closeMobileExportModal()" class="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow">Ho capito</button>
         </div>
@@ -317,7 +302,7 @@
     </div>
 
     <script>
-        // --- ARCHIVIO COORDINATE CITTÀ (Metodo B) ---
+        // --- ARCHIVIO COORDINATE CITTÀ ---
         const CITY_COORDINATES = {
             "roma": { lat: 41.9028, lon: 12.4964, zone: "centro" },
             "milano": { lat: 45.4642, lon: 9.1900, zone: "nord" },
@@ -339,40 +324,193 @@
             "lecce": { lat: 40.3529, lon: 18.1748, zone: "sud" }
         };
 
-        // --- SUPERMERCATI CON COORDINATE SIMULATE NEI DINTORNI ---
+        // --- SUPERMERCATI E VOLANTINI IN ZONA ---
         const ALL_SUPERMARKETS = [
-            { id: "eurospin", name: "Eurospin", type: "Discount", index: 0.85, url: "https://www.eurospin.it/volantino/", zones: ["nord", "centro", "sud", "isole"], dLat: 0.03, dLon: 0.02 },
-            { id: "lidl", name: "Lidl", type: "Discount", index: 0.88, url: "https://www.lidl.it/volantini", zones: ["nord", "centro", "sud", "isole"], dLat: -0.02, dLon: 0.04 },
-            { id: "conad", name: "Conad", type: "Superstore", index: 1.05, url: "https://www.conad.it/volantini", zones: ["nord", "centro", "sud", "isole"], dLat: 0.01, dLon: -0.03 },
-            { id: "coop", name: "Coop", type: "Superstore", index: 1.06, url: "https://www.e-coop.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: 0.01 },
-            { id: "carrefour", name: "Carrefour", type: "Superstore", index: 1.04, url: "https://www.carrefour.it/volantino/", zones: ["nord", "centro", "sud"], dLat: -0.04, dLon: -0.02 },
-            { id: "esselunga", name: "Esselunga", type: "Superstore", index: 1.02, url: "https://www.esselunga.it/it-it/volantino.html", zones: ["nord", "centro"], dLat: 0.02, dLon: 0.05 },
-            { id: "penny", name: "Penny", type: "Discount", index: 0.88, url: "https://www.penny.it/volantino", zones: ["nord", "centro"], dLat: -0.03, dLon: 0.03 },
-            { id: "md", name: "MD Spa", type: "Discount", index: 0.87, url: "https://www.mdspa.it/volantino", zones: ["centro", "sud", "isole", "nord"], dLat: 0.04, dLon: -0.04 },
-            { id: "despar", name: "Despar", type: "Superstore", index: 1.05, url: "https://www.despar.it/it/volantini/", zones: ["nord", "centro", "sud"], dLat: -0.05, dLon: 0.01 },
-            { id: "pam", name: "Pam", type: "Superstore", index: 1.03, url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"], dLat: 0.01, dLon: 0.04 },
-            { id: "todis", name: "Todis", type: "Discount", index: 0.89, url: "https://www.todis.it/volantino/", zones: ["centro", "sud"], dLat: -0.02, dLon: -0.05 },
-            { id: "ma", name: "MA Supermercati", type: "Supermercato", index: 0.90, url: "https://www.masupermercati.it/", zones: ["centro"], dLat: 0.03, dLon: -0.01 },
-            { id: "iperdem", name: "IperDem", type: "Supermercato", index: 0.92, url: "https://www.iperdem.it/", zones: ["centro"], dLat: -0.01, dLon: -0.03 },
-            { id: "castoro", name: "Il Castoro", type: "Supermercato", index: 0.95, url: "https://www.spesilcastoro.it/", zones: ["centro"], dLat: 0.02, dLon: 0.02 },
-            { id: "tigre", name: "Tigre", type: "Supermercato", index: 1.01, url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"], dLat: -0.04, dLon: 0.02 },
-            { id: "crai", name: "Crai", type: "Supermercato", index: 1.08, url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: -0.03 }
+            { id: "eurospin", name: "Eurospin", type: "Discount", url: "https://www.eurospin.it/volantino/", zones: ["nord", "centro", "sud", "isole"], dLat: 0.03, dLon: 0.02 },
+            { id: "lidl", name: "Lidl", type: "Discount", url: "https://www.lidl.it/volantini", zones: ["nord", "centro", "sud", "isole"], dLat: -0.02, dLon: 0.04 },
+            { id: "conad", name: "Conad", type: "Superstore", url: "https://www.conad.it/volantini", zones: ["nord", "centro", "sud", "isole"], dLat: 0.01, dLon: -0.03 },
+            { id: "coop", name: "Coop", type: "Superstore", url: "https://www.e-coop.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: 0.01 },
+            { id: "carrefour", name: "Carrefour", type: "Superstore", url: "https://www.carrefour.it/volantino/", zones: ["nord", "centro", "sud"], dLat: -0.04, dLon: -0.02 },
+            { id: "esselunga", name: "Esselunga", type: "Superstore", url: "https://www.esselunga.it/it-it/volantino.html", zones: ["nord", "centro"], dLat: 0.02, dLon: 0.05 },
+            { id: "penny", name: "Penny", type: "Discount", url: "https://www.penny.it/volantino", zones: ["nord", "centro"], dLat: -0.03, dLon: 0.03 },
+            { id: "md", name: "MD Spa", type: "Discount", url: "https://www.mdspa.it/volantino", zones: ["centro", "sud", "isole", "nord"], dLat: 0.04, dLon: -0.04 },
+            { id: "despar", name: "Despar", type: "Superstore", url: "https://www.despar.it/it/volantini/", zones: ["nord", "centro", "sud"], dLat: -0.05, dLon: 0.01 },
+            { id: "pam", name: "Pam", type: "Superstore", url: "https://www.pampanorama.it/volantino", zones: ["nord", "centro"], dLat: 0.01, dLon: 0.04 },
+            { id: "todis", name: "Todis", type: "Discount", url: "https://www.todis.it/volantino/", zones: ["centro", "sud"], dLat: -0.02, dLon: -0.05 },
+            { id: "ma", name: "MA Supermercati", type: "Supermercato", url: "https://www.masupermercati.it/", zones: ["centro"], dLat: 0.03, dLon: -0.01 },
+            { id: "iperdem", name: "IperDem", type: "Supermercato", url: "https://www.iperdem.it/", zones: ["centro"], dLat: -0.01, dLon: -0.03 },
+            { id: "castoro", name: "Il Castoro", type: "Supermercato", url: "https://www.spesilcastoro.it/", zones: ["centro"], dLat: 0.02, dLon: 0.02 },
+            { id: "tigre", name: "Tigre", type: "Supermercato", url: "https://www.tigre-supermercati.it/volantino", zones: ["centro", "sud"], dLat: -0.04, dLon: 0.02 },
+            { id: "crai", name: "Crai", type: "Supermercato", url: "https://www.crai.it/volantini", zones: ["nord", "centro", "sud"], dLat: 0.05, dLon: -0.03 }
         ];
 
-        const BASE_PRICES = {
-            "Pasta di semola 500g": { base: 0.95 },
-            "Passata di pomodoro 700g": { base: 1.15 },
-            "Olio Extravergine d'Oliva 1L": { base: 8.90 },
-            "Latte intero 1L": { base: 1.29 },
-            "Acqua naturale 1.5L (pack 6)": { base: 1.95 },
-            "Petto di pollo fresco": { base: 8.90 },
-            "Carne macinata mista": { base: 7.50 },
-            "Mozzarella di bufala 125g": { base: 1.49 },
-            "Parmigiano Reggiano 250g": { base: 4.50 },
-            "Mele Golden (sfuse)": { base: 2.19 },
-            "Banane": { base: 1.69 },
-            "Detersivo lavatrice liquido": { base: 3.80 },
-            "Carta igienica (confezione 4 rotoli)": { base: 1.90 }
+        // --- CATALOGO ESTESO OLTRE 300 PRODOTTI DA SUPERMERCATO (PREZZI BASE MEDI IN €) ---
+        const CATALOG_SEEDS = {
+            "Dispensa & Colazione": [
+                ["Pasta di semola 500g", 0.95], ["Spaghetti 500g", 0.95], ["Penne rigate 500g", 0.95],
+                ["Fusilli 500g", 0.99], ["Rigatoni 500g", 0.99], ["Mezze maniche 500g", 1.05],
+                ["Pasta all'uovo 250g", 1.45], ["Tagliatelle all'uovo 500g", 2.20], ["Gnocchi di patate 500g", 1.35],
+                ["Riso Arborio 1kg", 2.80], ["Riso Carnaroli 1kg", 3.10], ["Riso Basmati 1kg", 2.90],
+                ["Riso parboiled 1kg", 2.10], ["Farro perlato 500g", 1.85], ["Orzo perlato 500g", 1.65],
+                ["Cous cous 500g", 1.95], ["Polenta istantanea 500g", 1.15], ["Farina tipo 00 1kg", 0.85],
+                ["Farina tipo 1 1kg", 1.15], ["Farina manitoba 1kg", 1.35], ["Pangrattato 500g", 1.10],
+                ["Pane in cassetta 400g", 1.30], ["Pancarrè 500g", 1.55], ["Fette biscottate 315g", 1.45],
+                ["Cracker 500g", 1.65], ["Grissini stirati 250g", 1.35], ["Taralli pugliesi 300g", 1.75],
+                ["Biscotti frollini 700g", 2.20], ["Biscotti secchi 500g", 1.75], ["Biscotti con gocce di cioccolato 350g", 2.10],
+                ["Merendine confezione 6pz", 2.30], ["Cornetti colazione 6pz", 2.45], ["Cereali fiocchi di mais 375g", 1.95],
+                ["Muesli frutta secca 500g", 2.75], ["Fiocchi d'avena 500g", 1.60], ["Caffè macinato 250g", 2.60],
+                ["Caffè moka 2x250g", 4.90], ["Capsule caffè 16pz", 3.80], ["Cialde caffè 18pz", 3.60],
+                ["Tè nero bustine 25pz", 1.40], ["Camomilla filtri 20pz", 1.50], ["Cacao amaro in polvere 180g", 1.85],
+                ["Zucchero semolato 1kg", 1.25], ["Zucchero di canna 1kg", 1.85], ["Miele millefiori 400g", 3.90],
+                ["Marmellata / confettura 350g", 2.15], ["Crema spalmabile nocciola 400g", 3.20],
+                ["Passata di pomodoro 700g", 1.15], ["Polpa di pomodoro 3x400g", 2.20], ["Pomodori pelati 400g", 0.95],
+                ["Concentrato di pomodoro 200g", 1.10], ["Sugo pronto al basilico 400g", 1.45], ["Ragù alla bolognese 360g", 1.85],
+                ["Pesto alla genovese 180g", 1.95], ["Olio extravergine d'oliva 1L", 8.90], ["Olio di semi di girasole 1L", 2.10],
+                ["Olio di mais 1L", 2.50], ["Aceto di vino bianco 1L", 0.95], ["Aceto balsamico di Modena 250ml", 2.40],
+                ["Sale fino da cucina 1kg", 0.45], ["Sale grosso 1kg", 0.45], ["Dado da brodo 20 cubi", 1.35],
+                ["Tonno all'olio d'oliva 3x80g", 3.40], ["Tonno al naturale 3x80g", 3.50], ["Sgombro all'olio d'oliva 120g", 1.65],
+                ["Simmenthal 2x140g", 3.90], ["Ceci precotti 3x400g", 1.85], ["Fagioli cannellini 3x400g", 1.85],
+                ["Lenticchie precotte 3x400g", 1.85], ["Piselli fini 3x400g", 1.95], ["Mais dolce in scatola 3x140g", 2.10],
+                ["Olive verdi denocciolate 200g", 1.55], ["Olive nere 200g", 1.65], ["Carciofini sott'olio 280g", 2.60],
+                ["Funghi champignon trifolati 280g", 2.20], ["Patatine chips busta 150g", 1.35], ["Pop corn per microonde 3x90g", 1.75],
+                ["Cioccolato fondente tavoletta 100g", 1.35], ["Cioccolato al latte tavoletta 100g", 1.25], ["Lievito istantaneo per dolci 3x16g", 1.15]
+            ],
+            "Frigo & Latticini": [
+                ["Latte intero fresco 1L", 1.35], ["Latte parzialmente scremato 1L", 1.25], ["Latte scremato 1L", 1.25],
+                ["Latte a lunga conservazione UHT 1L", 1.10], ["Latte senza lattosio 1L", 1.65], ["Bevanda di soia 1L", 1.55],
+                ["Bevanda di avena 1L", 1.75], ["Bevanda di mandorla 1L", 1.85], ["Panna da cucina 200ml", 1.25],
+                ["Panna fresca da montare 250ml", 1.80], ["Burro classico 250g", 2.30], ["Burro senza lattosio 200g", 2.45],
+                ["Yogurt bianco intero 2x125g", 1.10], ["Yogurt alla frutta 2x125g", 1.15], ["Yogurt greco bianco 150g", 1.15],
+                ["Kefir naturale 500ml", 1.85], ["Mozzarella fior di latte 3x100g", 2.50], ["Mozzarella di bufala 125g", 1.55],
+                ["Scamorza bianca o affumicata 250g", 2.40], ["Caciotta fresca 300g", 2.90], ["Provola dolce 250g", 2.50],
+                ["Ricotta vaccina fresca 250g", 1.25], ["Robiola / formaggio fresco spalmabile 175g", 1.55], ["Mascarpone 250g", 2.10],
+                ["Gorgonzola dolce o piccante 200g", 2.35], ["Taleggio DOP 200g", 2.70], ["Fontina DOP 250g", 3.40],
+                ["Parmigiano Reggiano 250g", 4.60], ["Grana Padano grattugiato 100g", 1.75], ["Pecorino romano grattugiato 100g", 1.85],
+                ["Prosciutto cotto a fette 120g", 2.15], ["Prosciutto crudo a fette 100g", 2.65], ["Salame milano a fette 100g", 2.10],
+                ["Bresaola della Valtellina a fette 80g", 3.20], ["Speck a fette 100g", 2.55], ["Mortadella a fette 150g", 1.85],
+                ["Wurstel suino o pollo 250g", 1.45], ["Pasta fresca tortellini 250g", 2.20], ["Pasta fresca orecchiette 500g", 1.75],
+                ["Pasta sfoglia rettangolare 230g", 1.35], ["Pasta brisée 230g", 1.35], ["Uova fresche allevamento a terra 6pz", 1.85],
+                ["Uova fresche biologiche 6pz", 2.45], ["Hummus di ceci 180g", 1.75], ["Tofu al naturale 250g", 1.85]
+            ],
+            "Ortofrutta": [
+                ["Mele Golden 1kg", 2.10], ["Mele Fuji 1kg", 2.20], ["Mele Gala 1kg", 2.15],
+                ["Mele Smith 1kg", 2.25], ["Pere Abate 1kg", 2.40], ["Pere Williams 1kg", 2.35],
+                ["Banane 1kg", 1.75], ["Arance da tavola 1kg", 1.95], ["Arance da spremuta 1kg", 1.65],
+                ["Mandarini / clementine 1kg", 2.30], ["Limoni 500g", 1.35], ["Kiwi 1kg", 2.80],
+                ["Uva bianca o nera 500g", 1.95], ["Fragole vaschetta 250g", 2.10], ["Pesche / nettarine 1kg", 2.50],
+                ["Albicocche 1kg", 2.60], ["Anguria / cocomero 1kg", 0.95], ["Melone retato 1kg", 1.85],
+                ["Avocado 1pz", 1.45], ["Pomodori ramati 1kg", 2.40], ["Pomodori ciliegini 500g", 2.10],
+                ["Pomodori datterini 500g", 2.30], ["Pomodori per insalata 1kg", 2.20], ["Patate a pasta gialla 1kg", 1.35],
+                ["Patate novelle 1kg", 1.65], ["Cipolle dorate 1kg", 1.25], ["Cipolle rosse di Tropea 500g", 1.45],
+                ["Aglio 2 teste", 1.15], ["Carote 1kg", 1.35], ["Zucchine chiare o scure 1kg", 2.20],
+                ["Melanzane violette o lunghe 1kg", 2.30], ["Peperoni rossi o gialli 1kg", 2.65], ["Finocchi 1kg", 2.10],
+                ["Sedano 1pz", 1.30], ["Cetrioli 1kg", 1.85], ["Lattuga romana / gentile 1pz", 1.25],
+                ["Insalata mista in busta 200g", 1.35], ["Rucola in vaschetta 125g", 1.20], ["Spinaci freschi 500g", 1.75],
+                ["Broccoli / cavolfiore 1kg", 2.10], ["Zucca a fette o intera 1kg", 1.65], ["Funghi champignon freschi 400g", 2.15],
+                ["Prezzemolo / basilico fresco mazzetto", 1.05], ["Zenzero fresco 200g", 1.45], ["Frutta secca mista / noci 250g", 2.95]
+            ],
+            "Carne & Pesce": [
+                ["Petto di pollo intero 1kg", 8.90], ["Fette di petto di pollo 1kg", 9.80], ["Sovracosce di pollo 1kg", 6.50],
+                ["Fusi / cosce di pollo 1kg", 5.80], ["Alette di pollo 1kg", 5.20], ["Pollo intero fresco 1kg", 5.40],
+                ["Fesa di tacchino a fette 1kg", 10.50], ["Arrosto di tacchino 1kg", 8.80], ["Macinato di tacchino 1kg", 7.20],
+                ["Carne macinata mista bovino/suino 1kg", 7.80], ["Carne macinata scelta di bovino 1kg", 10.90],
+                ["Bistecche / fettine scelte di bovino 1kg", 15.50], ["Fettine di vitello 1kg", 18.00],
+                ["Arrosto / girello di bovino 1kg", 13.50], ["Spezzatino di bovino 1kg", 11.20], ["Hamburger di bovino 2x100g", 2.80],
+                ["Salsiccia di suino fresca 1kg", 7.60], ["Lonza / arista di suino 1kg", 8.40], ["Costine di suino 1kg", 7.90],
+                ["Braciole di suino 1kg", 8.20], ["Filetto di salmone fresco 1kg", 19.50], ["Salmone affumicato a fette 100g", 3.60],
+                ["Filetti di merluzzo / nasello 1kg", 12.50], ["Orata fresca 1kg", 11.90], ["Branzino / spigola fresco 1kg", 12.50],
+                ["Gamberi / mazzancolle sgusciate 300g", 5.90], ["Calamari / totani freschi 1kg", 14.50], ["Polpo fresco 1kg", 16.00],
+                ["Cozze fresche 1kg", 3.80], ["Vongole fresche 1kg", 7.50], ["Bastoncini di pesce surgelati 250g", 2.40],
+                ["Filetti di platessa surgelati 400g", 4.20], ["Zuppa di pesce surgelata 400g", 4.80]
+            ],
+            "Bevande": [
+                ["Acqua naturale 1.5L (pack 6)", 1.95], ["Acqua frizzante 1.5L (pack 6)", 2.05], ["Acqua oligominerale naturale 2L (pack 6)", 2.15],
+                ["Acqua in bottiglia singola 1.5L", 0.35], ["Coca-Cola classica 1.5L", 1.85], ["Coca-Cola zero 1.5L", 1.85],
+                ["Fanta aranciata 1.5L", 1.65], ["Sprite 1.5L", 1.65], ["Thè freddo alla pesca 1.5L", 1.25],
+                ["Thè freddo al limone 1.5L", 1.25], ["Succo di frutta pera 3x200ml", 1.45], ["Succo di frutta pesca 3x200ml", 1.45],
+                ["Succo d'arancia 100% 1L", 1.85], ["Succo di mela 1L", 1.65], ["Acqua tonica 1L", 1.15],
+                ["Birra bionda classica 3x33cl", 2.30], ["Birra lager 66cl", 1.15], ["Birra artigianale / doppio malto 50cl", 2.20],
+                ["Birra analcolica 33cl", 0.95], ["Vino rosso da tavola 750ml", 2.90], ["Vino bianco fermo 750ml", 2.90],
+                ["Vino rosato 750ml", 3.10], ["Vino DOC / riserva 750ml", 5.80], ["Spumante brut / prosecco 750ml", 4.90]
+            ],
+            "Casa & Igiene": [
+                ["Detersivo lavatrice liquido 1.5L (30 lavaggi)", 4.20], ["Detersivo lavatrice in polvere 2kg", 4.50],
+                ["Capsule detersivo lavatrice 24pz", 5.90], ["Ammorbidente concentrato 750ml (30 lavaggi)", 2.10],
+                ["Smacchiatore / additivo bucato 1L", 2.80], ["Detersivo piatti a mano 1L", 1.45],
+                ["Detersivo lavastoviglie gel o pastiglie 30pz", 5.50], ["Brillantante lavastoviglie 500ml", 1.95],
+                ["Detergente pavimenti 1L", 1.55], ["Detergente multisuperficie spray 750ml", 1.65],
+                ["Sgrassatore universale spray 750ml", 1.85], ["Candeggina classica 2L", 1.45],
+                ["Detergente per vetri 500ml", 1.40], ["Gel wc igienizzante 750ml", 1.50],
+                ["Carta igienica 4 rotoli", 1.95], ["Carta igienica 12 rotoli", 5.40], ["Rotoli carta cucina / scottex 2 rotoli", 1.85],
+                ["Tovaglioli di carta 50pz", 1.25], ["Fazzoletti di carta pacchetto 10pz", 1.35],
+                ["Sacchetti immondizia 30L (20pz)", 1.45], ["Sacchetti immondizia 60L (15pz)", 1.95],
+                ["Pellicola trasparente per alimenti 30m", 1.45], ["Carta alluminio 12m", 1.85], ["Carta forno 20 fogli", 1.55],
+                ["Spugne abrasive cucina 3pz", 1.25], ["Guanti in lattice / nitrile 10pz", 1.35],
+                ["Sapone liquido mani ricarica 500ml", 1.45], ["Sapone solido 100g", 0.85], ["Bagnoschiuma / docciaschiuma 500ml", 1.95],
+                ["Shampoo capelli 250ml", 2.20], ["Balsamo capelli 200ml", 2.30], ["Dentifricio protezione 75ml", 1.55],
+                ["Spazzolino da denti 1pz", 1.65], ["Collutorio 500ml", 2.45], ["Deodorante spray o roll-on 150ml", 2.65],
+                ["Assorbenti / proteggislip confezione", 2.40], ["Lamette usa e getta 6pz", 2.95], ["Cibo umido gatti vaschetta 100g", 0.65],
+                ["Crocchette gatti 800g", 3.40], ["Cibo umido cani vaschetta/lattina 400g", 1.25], ["Crocchette cani 1.5kg", 4.50]
+            ]
+        };
+
+        const BASE_PRICES = (() => {
+            const map = {};
+            const variants = [
+                { suffix: " (formato convenienza)", factor: 0.90 },
+                { suffix: " bio", factor: 1.25 }
+            ];
+            let counter = 0;
+
+            Object.values(CATALOG_SEEDS).forEach(list => {
+                list.forEach(([name, price]) => {
+                    map[name] = { base: price };
+                    counter++;
+                    if (counter % 2 === 0) {
+                        const v = variants[counter % variants.length];
+                        map[name + v.suffix] = { base: Number((price * v.factor).toFixed(2)) };
+                    }
+                });
+            });
+
+            const extras = [
+                ["Panettone classico 1kg", 5.90], ["Pandoro classico 1kg", 5.50], ["Colomba pasquale 750g", 5.40],
+                ["Farina di ceci 500g", 1.45], ["Farina di riso 500g", 1.40], ["Semola rimacinata 1kg", 1.25],
+                ["Bucatini 500g", 1.05], ["Linguine 500g", 0.99], ["Trofie fresche 500g", 1.85],
+                ["Lasagne all'uovo da forno 500g", 2.35], ["Cannelloni 250g", 1.65], ["Brodo vegetale granulare 150g", 1.60],
+                ["Pepe nero macinato 50g", 1.45], ["Origano secco 25g", 1.15], ["Maionese in vaso 250ml", 1.55],
+                ["Ketchup 450g", 1.65], ["Senape 200g", 1.45], ["Tonno in scatola grande 160g", 1.95],
+                ["Fagioli borlotti 3x400g", 1.85], ["Ceci secchi 500g", 1.65], ["Lenticchie secche 500g", 1.75],
+                ["Fette biscottate integrali 315g", 1.55], ["Gallette di riso 130g", 1.35], ["Gallette di mais 130g", 1.35],
+                ["Caffè solubile 100g", 3.90], ["Orzo solubile 120g", 2.75], ["Tisana rilassante 20 filtri", 1.65],
+                ["Stracchino fresco 250g", 2.15], ["Crescenza 250g", 1.95], ["Certosa / formaggio cremoso 165g", 1.75],
+                ["Fiocchi di latte 200g", 1.45], ["Burrata fresca 125g", 1.75], ["Prosciutto crudo intero/trancio 300g", 5.80],
+                ["Pancetta affumicata a cubetti 150g", 2.10], ["Wurstel di pollo 250g", 1.35], ["Ravioli ricotta e spinaci freschi 250g", 2.25],
+                ["Tortelloni ricotta e spinaci 500g", 3.40], ["Panna acida 200ml", 1.45], ["Kefir alla fragola 500ml", 1.95],
+                ["Melograno 1kg", 2.40], ["Cachi 1kg", 2.20], ["Prugne 1kg", 2.50],
+                ["Pomodori cuore di bue 1kg", 2.65], ["Scarola / indivia 1pz", 1.45], ["Cime di rapa 1kg", 2.25],
+                ["Carciofi 4pz", 3.20], ["Porri 500g", 1.45], ["Ravanelli 1 mazzetto", 1.15],
+                ["Cordon bleu di pollo/tacchino 2pz", 2.60], ["Cotoletta di pollo impanata 2pz", 2.70], ["Fesa di tacchino arrosto 1kg", 9.40],
+                ["Polpette di carne 300g", 3.40], ["Alici / sarde fresche 1kg", 5.90], ["Seppie fresche 1kg", 13.50],
+                ["Acqua frizzante in bottiglia singola 1.5L", 0.38], ["Chinotto 1L", 1.45], ["Cedrata 1L", 1.45],
+                ["Spremuta d'arancia fresca 500ml", 2.30], ["Birra senza glutine 33cl", 1.25], ["Vino frizzante bianco 750ml", 3.30],
+                ["Candeggina delicata profumata 1.5L", 1.85], ["Anticalcare spray 750ml", 2.10], ["Panni catturapolvere asciutti 25pz", 2.20],
+                ["Panni umidi pavimenti 15pz", 2.10], ["Salviette struccanti 25pz", 1.55], ["Crema corpo idratante 250ml", 2.65]
+            ];
+            extras.forEach(([name, price]) => {
+                map[name] = { base: price };
+            });
+
+            return map;
+        })();
+
+        const CATEGORY_FALLBACK_PRICES = {
+            "Dispensa & Colazione": { unit: 1.65, kg: 2.50, L: 2.20 },
+            "Frigo & Latticini": { unit: 2.10, kg: 9.50, L: 1.45 },
+            "Ortofrutta": { unit: 1.45, kg: 2.20, L: 2.00 },
+            "Carne & Pesce": { unit: 3.50, kg: 11.50, L: 12.00 },
+            "Bevande": { unit: 1.50, kg: 1.50, L: 1.10 },
+            "Casa & Igiene": { unit: 2.20, kg: 3.50, L: 2.60 }
         };
 
         const MACRO_META = {
@@ -387,18 +525,18 @@
         const INITIAL_ITEMS = [
             { id: "1", name: "Pasta di semola 500g", qty: 2, unit: "conf", category: "Dispensa & Colazione", checked: false },
             { id: "2", name: "Passata di pomodoro 700g", qty: 2, unit: "conf", category: "Dispensa & Colazione", checked: false },
-            { id: "3", name: "Olio Extravergine d'Oliva 1L", qty: 1, unit: "L", category: "Dispensa & Colazione", checked: false },
-            { id: "4", name: "Latte intero 1L", qty: 2, unit: "L", category: "Frigo & Latticini", checked: false },
+            { id: "3", name: "Olio extravergine d'oliva 1L", qty: 1, unit: "L", category: "Dispensa & Colazione", checked: false },
+            { id: "4", name: "Latte intero fresco 1L", qty: 2, unit: "L", category: "Frigo & Latticini", checked: false },
             { id: "5", name: "Mozzarella di bufala 125g", qty: 3, unit: "pz", category: "Frigo & Latticini", checked: false },
-            { id: "6", name: "Mele Golden (sfuse)", qty: 1.5, unit: "kg", category: "Ortofrutta", checked: false },
-            { id: "7", name: "Petto di pollo fresco", qty: 0.6, unit: "kg", category: "Carne & Pesce", checked: false },
+            { id: "6", name: "Mele Golden 1kg", qty: 1.5, unit: "kg", category: "Ortofrutta", checked: false },
+            { id: "7", name: "Petto di pollo intero 1kg", qty: 0.6, unit: "kg", category: "Carne & Pesce", checked: false },
             { id: "8", name: "Acqua naturale 1.5L (pack 6)", qty: 2, unit: "conf", category: "Bevande", checked: false }
         ];
 
         let appState = {
             comune: "Roma",
             searchQuery: "",
-            selectedMarketId: null,
+            customPrices: {},
             expandedCategories: {
                 "Dispensa & Colazione": true,
                 "Frigo & Latticini": true,
@@ -432,7 +570,11 @@
         function loadLocalState() {
             const saved = localStorage.getItem('spesaSmartStateV5');
             if (saved) {
-                try { appState = JSON.parse(saved); } catch(e) {}
+                try {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                    if (!appState.customPrices) appState.customPrices = {};
+                } catch(e) {}
             }
             const savedFb = localStorage.getItem('spesaSmartFirebaseUrl');
             const savedRoom = localStorage.getItem('spesaSmartFirebaseRoom');
@@ -445,7 +587,7 @@
 
         // --- FORMULA DI HAVERSINE PER CALCOLO DISTANZA REALE IN KM ---
         function calculateDistanceKm(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Raggio della Terra in km
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = 
@@ -461,7 +603,6 @@
             if (CITY_COORDINATES[key]) {
                 return CITY_COORDINATES[key];
             }
-            // Fallback generico su Roma se la città non è in elenco
             return { lat: 41.9028, lon: 12.4964, zone: "centro" };
         }
 
@@ -469,7 +610,6 @@
             const cityData = getCityData(appState.comune);
             const radiusLimit = parseFloat(document.getElementById('radiusSelect')?.value) || 10;
 
-            // Filtra per zona e calcola distanza reale con Haversine
             return ALL_SUPERMARKETS
                 .filter(m => m.zones.includes(cityData.zone))
                 .map(market => {
@@ -482,66 +622,43 @@
                 .sort((a, b) => a.distance - b.distance);
         }
 
-        function calculateItemSubtotal(item, marketIndex) {
-            const info = BASE_PRICES[item.name] || { base: 2.00 };
-            let multiplier = (item.unit === 'g' || item.unit === 'ml') ? item.qty / 1000 : item.qty;
-            return info.base * multiplier * marketIndex;
+        function findCatalogBasePrice(item) {
+            if (!item || !item.name) return 1.80;
+            const normName = item.name.toLowerCase().trim();
+
+            if (appState.customPrices && typeof appState.customPrices[normName] === 'number') {
+                return appState.customPrices[normName];
+            }
+
+            const exact = BASE_PRICES[item.name];
+            if (exact) return exact.base;
+
+            const keys = Object.keys(BASE_PRICES);
+            const partialKey = keys.find(k => {
+                const lk = k.toLowerCase();
+                return lk === normName || lk.includes(normName) || (normName.length > 3 && normName.includes(lk.split(" ")[0]));
+            });
+            if (partialKey) return BASE_PRICES[partialKey].base;
+
+            const catRates = CATEGORY_FALLBACK_PRICES[item.category] || { unit: 1.80, kg: 3.50, L: 2.00 };
+            if (item.unit === "kg" || item.unit === "g") return catRates.kg;
+            if (item.unit === "L" || item.unit === "ml") return catRates.L;
+            return catRates.unit;
         }
 
-        function getBestSupermarketRankings() {
-            const activeMarkets = getActiveSupermarketsWithDistance();
-            let totals = activeMarkets.map(market => {
-                let sum = 0;
-                appState.items.forEach(item => {
-                    sum += calculateItemSubtotal(item, market.index);
-                });
-                return { market, total: sum };
-            });
-            totals.sort((a, b) => a.total - b.total);
-            return totals;
+        function calculateItemSubtotal(item) {
+            let multiplier = (item.unit === 'g' || item.unit === 'ml') ? item.qty / 1000 : item.qty;
+            if (typeof item.customPrice === 'number' && !isNaN(item.customPrice) && item.customPrice > 0) {
+                return item.customPrice * multiplier;
+            }
+            const basePrice = findCatalogBasePrice(item);
+            return basePrice * multiplier;
         }
 
         function renderApp() {
-            renderPodium();
             renderMarketsList();
-            renderSelectedMarketDetails();
             renderMacroGroupsLists();
             renderFooterTotal();
-        }
-
-        function renderPodium() {
-            const rankings = getBestSupermarketRankings();
-            const top3 = rankings.slice(0, 3);
-            const container = document.getElementById('podiumContainer');
-            container.innerHTML = '';
-
-            if (top3.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 col-span-3 text-center py-2">Nessun supermercato nel raggio selezionato.</p>`;
-                return;
-            }
-
-            const badgeColors = ['bg-amber-100 text-amber-800 border-amber-300', 'bg-slate-100 text-slate-700 border-slate-300', 'bg-orange-100 text-orange-800 border-orange-300'];
-            const medals = ['🥇', '🥈', '🥉'];
-
-            top3.forEach((item, idx) => {
-                container.innerHTML += `
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="w-6 h-6 rounded-lg ${badgeColors[idx]} border flex items-center justify-center font-bold text-xs">
-                                ${medals[idx]}
-                            </span>
-                            <span class="text-xs font-extrabold text-slate-800">€ ${item.total.toFixed(2)}</span>
-                        </div>
-                        <h4 class="font-bold text-xs text-slate-800 truncate">${item.market.name}</h4>
-                        <div class="flex justify-between items-center mt-1">
-                            <a href="${item.market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline font-semibold">
-                                Volantino <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                            </a>
-                            <span class="text-[9px] text-slate-400">${item.market.distance.toFixed(1)} km</span>
-                        </div>
-                    </div>
-                `;
-            });
         }
 
         function renderMarketsList() {
@@ -550,62 +667,24 @@
             const activeMarkets = getActiveSupermarketsWithDistance();
 
             if (activeMarkets.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">Nessun negozio trovato nel raggio. Prova ad aumentare i km.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-3 col-span-full">Nessun supermercato trovato nel raggio selezionato. Prova ad aumentare i km.</p>`;
                 return;
             }
 
             activeMarkets.forEach((market) => {
-                const isSelected = appState.selectedMarketId === market.id;
                 container.innerHTML += `
-                    <div onclick="selectMarket('${market.id}')" class="p-2 rounded-xl border text-xs cursor-pointer flex justify-between items-center transition ${isSelected ? 'bg-emerald-50 border-emerald-300 shadow-xs' : 'bg-slate-50/50 border-slate-200 hover:bg-slate-100'}">
-                        <div>
-                            <p class="font-bold text-slate-800">${market.name}</p>
-                            <p class="text-[10px] text-slate-400">${market.distance.toFixed(1)} km • ${market.type}</p>
+                    <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100/80 transition flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-bold text-xs text-slate-800 truncate">${market.name}</p>
+                            <p class="text-[10px] text-slate-500">${market.distance.toFixed(1)} km • ${market.type}</p>
                         </div>
-                        <span class="text-[10px] font-bold text-emerald-700 bg-white px-2 py-1 rounded-lg border border-slate-200">Seleziona</span>
+                        <a href="${market.url}" target="_blank" rel="noopener noreferrer"
+                           class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition shadow-xs">
+                            Volantino <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        </a>
                     </div>
                 `;
             });
-        }
-
-        function selectMarket(marketId) {
-            appState.selectedMarketId = marketId;
-            renderSelectedMarketDetails();
-            renderMarketsList();
-        }
-
-        function renderSelectedMarketDetails() {
-            const detailsDiv = document.getElementById('selectedMarketDetails');
-            if (!appState.selectedMarketId) {
-                detailsDiv.classList.add('hidden');
-                return;
-            }
-
-            const market = ALL_SUPERMARKETS.find(m => m.id === appState.selectedMarketId);
-            if (!market) {
-                detailsDiv.classList.add('hidden');
-                return;
-            }
-
-            let marketTotal = 0;
-            appState.items.forEach(item => {
-                marketTotal += calculateItemSubtotal(item, market.index);
-            });
-
-            detailsDiv.classList.remove('hidden');
-            detailsDiv.innerHTML = `
-                <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 flex justify-between items-center">
-                    <div>
-                        <span class="text-[10px] uppercase font-bold text-emerald-700 tracking-wider">Negozio Selezionato</span>
-                        <h4 class="font-bold text-sm text-slate-800">${market.name}</h4>
-                        <a href="${market.url}" target="_blank" class="text-[10px] text-emerald-600 hover:underline font-semibold">Apri Volantino Ufficiale <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-sm font-extrabold text-emerald-700">€ ${marketTotal.toFixed(2)}</span>
-                        <p class="text-[9px] text-slate-500">Costo stimato spesa</p>
-                    </div>
-                </div>
-            `;
         }
 
         function renderMacroGroupsLists() {
@@ -619,8 +698,6 @@
             const pendingItems = filtered.filter(i => !i.checked);
             const cartItems = filtered.filter(i => i.checked);
 
-            const rankings = getBestSupermarketRankings();
-            const bestMarketIndex = rankings[0]?.market.index || 1;
             const categories = Object.keys(MACRO_META);
 
             // Render "Da Acquistare"
@@ -632,10 +709,11 @@
 
                 const isExpanded = appState.expandedCategories[catName] !== false;
                 let catTotal = 0;
-                catItems.forEach(i => catTotal += calculateItemSubtotal(i, bestMarketIndex));
+                catItems.forEach(i => catTotal += calculateItemSubtotal(i));
 
                 let itemsHtml = catItems.map(item => {
-                    const subtotal = calculateItemSubtotal(item, bestMarketIndex);
+                    const subtotal = calculateItemSubtotal(item);
+                    const hasCustom = typeof item.customPrice === 'number' && item.customPrice > 0;
                     return `
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2.5 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
                             <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
@@ -647,9 +725,9 @@
                                 <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 transition">
                                     ${item.qty} ${item.unit}
                                 </button>
-                                <div class="text-right w-16">
-                                    <span class="text-xs font-bold text-slate-800">€ ${subtotal.toFixed(2)}</span>
-                                </div>
+                                <button onclick="openQtyModal('${item.id}', true)" title="Clicca per modificare il prezzo" class="text-right min-w-[4.5rem] px-2 py-1 rounded-lg hover:bg-emerald-50 transition ${hasCustom ? 'text-emerald-700 font-extrabold bg-emerald-50/60' : 'text-slate-800 font-bold'}">
+                                    <span class="text-xs">€ ${subtotal.toFixed(2)}</span>
+                                </button>
                                 <button onclick="deleteItem('${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
                             </div>
                         </div>
@@ -692,7 +770,7 @@
                 hasCart = true;
 
                 let itemsHtml = catItems.map(item => {
-                    const subtotal = calculateItemSubtotal(item, bestMarketIndex);
+                    const subtotal = calculateItemSubtotal(item);
                     return `
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2.5 px-3 hover:bg-slate-50 rounded-xl transition border-b border-slate-100 last:border-none gap-2">
                             <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
@@ -704,9 +782,9 @@
                                 <button onclick="openQtyModal('${item.id}')" class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200">
                                     ${item.qty} ${item.unit}
                                 </button>
-                                <div class="text-right w-16">
+                                <button onclick="openQtyModal('${item.id}', true)" class="text-right min-w-[4.5rem] px-2 py-1">
                                     <span class="text-xs font-bold text-slate-400">€ ${subtotal.toFixed(2)}</span>
-                                </div>
+                                </button>
                                 <button onclick="deleteItem('${item.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
                             </div>
                         </div>
@@ -739,13 +817,10 @@
         }
 
         function renderFooterTotal() {
-            const best = getBestSupermarketRankings();
             let total = 0;
-            if (best.length > 0) {
-                appState.items.forEach(item => {
-                    total += calculateItemSubtotal(item, best[0].market.index);
-                });
-            }
+            appState.items.forEach(item => {
+                total += calculateItemSubtotal(item);
+            });
             document.getElementById('footerTotalAmount').innerText = `€ ${total.toFixed(2)}`;
         }
 
@@ -798,8 +873,8 @@
             renderApp();
         }
 
-        // --- QUANTITÀ MODALE ---
-        function openQtyModal(itemId) {
+        // --- QUANTITÀ E PREZZO MODALE ---
+        function openQtyModal(itemId, focusPrice = false) {
             activeQtyEdit = itemId;
             const item = appState.items.find(i => i.id === itemId);
             if (!item) return;
@@ -813,11 +888,29 @@
                 setModalUnitType('qty', item.unit);
             }
 
+            const priceInput = document.getElementById('modalPriceInput');
+            const hintEl = document.getElementById('modalEstimatedPriceHint');
+            const estBase = findCatalogBasePrice({ ...item, customPrice: null });
+            hintEl.innerText = `Stima media catalogo: € ${estBase.toFixed(2)} per ${item.unit === 'g' ? 'kg' : (item.unit === 'ml' ? 'L' : item.unit)}`;
+
+            if (typeof item.customPrice === 'number' && item.customPrice > 0) {
+                priceInput.value = item.customPrice.toFixed(2);
+            } else {
+                priceInput.value = '';
+            }
+
             document.getElementById('qtyModal').classList.remove('hidden');
+            if (focusPrice) {
+                setTimeout(() => priceInput.focus(), 50);
+            }
         }
 
         function closeQtyModal() {
             document.getElementById('qtyModal').classList.add('hidden');
+        }
+
+        function resetModalCustomPrice() {
+            document.getElementById('modalPriceInput').value = '';
         }
 
         function setModalUnitType(type, forceUnit = null) {
@@ -849,7 +942,7 @@
         function adjustModalValue(amount) {
             const input = document.getElementById('modalValueInput');
             let val = parseFloat(input.value) || 0;
-            input.value = Math.max(0.1, val + amount);
+            input.value = Math.max(0.1, Number((val + amount).toFixed(2)));
         }
 
         function setQuickVal(val, unit = null) {
@@ -862,6 +955,20 @@
             if (item) {
                 item.qty = parseFloat(document.getElementById('modalValueInput').value) || 1;
                 item.unit = document.getElementById('modalUnitSelect').value;
+
+                const rawPrice = document.getElementById('modalPriceInput').value.trim();
+                const parsedPrice = parseFloat(rawPrice);
+                const normName = item.name.toLowerCase().trim();
+
+                if (rawPrice !== '' && !isNaN(parsedPrice) && parsedPrice > 0) {
+                    item.customPrice = parsedPrice;
+                    if (!appState.customPrices) appState.customPrices = {};
+                    appState.customPrices[normName] = parsedPrice;
+                } else {
+                    delete item.customPrice;
+                    if (appState.customPrices) delete appState.customPrices[normName];
+                }
+
                 saveLocalState();
                 renderApp();
             }
@@ -869,30 +976,54 @@
         }
 
         // --- AGGIUNGI PRODOTTO ---
-        function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+        function openAddModal() {
+            document.getElementById('addNameInput').value = '';
+            document.getElementById('addPriceInput').value = '';
+            document.getElementById('addModal').classList.remove('hidden');
+        }
         function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
+
+        function onAddNameInputChange(val) {
+            if (!val.trim()) return;
+            document.getElementById('addCategorySelect').value = detectCategoryByName(val);
+            const normName = val.toLowerCase().trim();
+            if (appState.customPrices && typeof appState.customPrices[normName] === 'number') {
+                document.getElementById('addPriceInput').value = appState.customPrices[normName].toFixed(2);
+            }
+        }
 
         function addNewItem() {
             const name = document.getElementById('addNameInput').value.trim();
             const category = document.getElementById('addCategorySelect').value;
             const qty = parseFloat(document.getElementById('addQtyInput').value) || 1;
             const unit = document.getElementById('addUnitSelect').value;
+            const rawPrice = document.getElementById('addPriceInput').value.trim();
+            const parsedPrice = parseFloat(rawPrice);
 
             if (!name) return;
 
-            appState.items.push({
+            const newItem = {
                 id: 'item_' + Date.now(),
                 name: name,
                 qty: qty,
                 unit: unit,
                 category: category,
                 checked: false
-            });
+            };
+
+            if (rawPrice !== '' && !isNaN(parsedPrice) && parsedPrice > 0) {
+                newItem.customPrice = parsedPrice;
+                if (!appState.customPrices) appState.customPrices = {};
+                appState.customPrices[name.toLowerCase().trim()] = parsedPrice;
+            }
+
+            appState.items.push(newItem);
 
             saveLocalState();
             renderApp();
             closeAddModal();
             document.getElementById('addNameInput').value = '';
+            document.getElementById('addPriceInput').value = '';
         }
 
         // --- SYNC FIREBASE ---
@@ -908,7 +1039,8 @@
                 firebaseRef.on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data && data.items) {
-                        appState = data;
+                        appState = { ...appState, ...data };
+                        if (!appState.customPrices) appState.customPrices = {};
                         renderApp();
                     }
                 });
@@ -946,7 +1078,7 @@
         // --- EXCEL ---
         function downloadExcelTemplate() {
             const wb = XLSX.utils.book_new();
-            const wsData = [["Prodotto", "Quantita", "Unita", "Reparto"], ["Pasta", 2, "conf", "Dispensa & Colazione"]];
+            const wsData = [["Prodotto", "Quantita", "Unita", "Reparto", "Prezzo"], ["Pasta di semola 500g", 2, "conf", "Dispensa & Colazione", 0.95]];
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), "Lista");
             XLSX.writeFile(wb, "Modello_SpesaSmart.xlsx");
         }
@@ -966,21 +1098,27 @@
                         const qty = parseFloat(row.Quantita || row.quantità || row.Qty || 1);
                         const unit = row.Unita || row.unità || row.Unit || 'pz';
                         let category = row.Reparto || row.reparto || row.Category || row.category;
+                        const rawPrice = parseFloat(row.Prezzo || row.prezzo || row.Price || row.price);
 
-                        // Riconoscimento automatico intelligente del reparto se manca nel file
                         if (!category || !MACRO_META[category]) {
                             category = detectCategoryByName(name);
                         }
 
                         if (name) {
-                            appState.items.push({
+                            const importedItem = {
                                 id: 'imp_' + Math.random().toString(36).substring(2, 9),
                                 name: name,
                                 qty: isNaN(qty) ? 1 : qty,
                                 unit: unit,
                                 category: category,
                                 checked: false
-                            });
+                            };
+                            if (!isNaN(rawPrice) && rawPrice > 0) {
+                                importedItem.customPrice = rawPrice;
+                                if (!appState.customPrices) appState.customPrices = {};
+                                appState.customPrices[String(name).toLowerCase().trim()] = rawPrice;
+                            }
+                            appState.items.push(importedItem);
                         }
                     });
                     saveLocalState();
@@ -997,12 +1135,12 @@
         // Funzione di supporto per l'assegnazione automatica del reparto
         function detectCategoryByName(name) {
             if (!name) return "Dispensa & Colazione";
-            const n = name.toLowerCase();
-            if (n.includes("latte") || n.includes("mozzarella") || n.includes("formaggio") || n.includes("yogurt") || n.includes("burro") || n.includes("parmigiano") || n.includes("ricotta")) return "Frigo & Latticini";
-            if (n.includes("mela") || n.includes("banana") || n.includes("frutta") || n.includes("verdura") || n.includes("insalata") || n.includes("patate") || n.includes("carote") || (n.includes("pomodoro") && !n.includes("passata"))) return "Ortofrutta";
-            if (n.includes("pollo") || n.includes("carne") || n.includes("macinata") || n.includes("pesce") || n.includes("salmone") || n.includes("bistecca") || n.includes("hamburger")) return "Carne & Pesce";
-            if (n.includes("acqua") || n.includes("bibita") || n.includes("vino") || n.includes("succo") || n.includes("birra") || n.includes("cola") || n.includes("coca")) return "Bevande";
-            if (n.includes("detersivo") || n.includes("carta") || n.includes("sapone") || n.includes("shampoo") || n.includes("candeggina") || n.includes("igienica") || n.includes("lavatrice")) return "Casa & Igiene";
+            const n = String(name).toLowerCase();
+            if (n.includes("latte") || n.includes("mozzarella") || n.includes("formaggio") || n.includes("yogurt") || n.includes("burro") || n.includes("parmigiano") || n.includes("ricotta") || n.includes("uova") || n.includes("prosciutto") || n.includes("salame")) return "Frigo & Latticini";
+            if (n.includes("mela") || n.includes("mele") || n.includes("banana") || n.includes("banane") || n.includes("frutta") || n.includes("verdura") || n.includes("insalata") || n.includes("patate") || n.includes("carote") || n.includes("zucchine") || n.includes("cipolle") || (n.includes("pomodor") && !n.includes("passata") && !n.includes("pelati") && !n.includes("polpa"))) return "Ortofrutta";
+            if (n.includes("pollo") || n.includes("carne") || n.includes("macinata") || n.includes("pesce") || n.includes("salmone") || n.includes("bistecca") || n.includes("hamburger") || n.includes("tacchino") || n.includes("vitello") || n.includes("salsiccia") || n.includes("orata") || n.includes("merluzzo")) return "Carne & Pesce";
+            if (n.includes("acqua") || n.includes("bibita") || n.includes("vino") || n.includes("succo") || n.includes("birra") || n.includes("cola") || n.includes("coca") || n.includes("aranciata") || n.includes("spumante")) return "Bevande";
+            if (n.includes("detersivo") || n.includes("carta") || n.includes("sapone") || n.includes("shampoo") || n.includes("candeggina") || n.includes("igienica") || n.includes("lavatrice") || n.includes("dentifricio") || n.includes("bagnoschiuma") || n.includes("ammorbidente")) return "Casa & Igiene";
             return "Dispensa & Colazione";
         }
     </script>
