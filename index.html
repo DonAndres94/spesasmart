@@ -602,14 +602,14 @@
         }
 
         function saveLocalState() {
-            localStorage.setItem('spesaSmartStateV8', JSON.stringify(appState));
+            localStorage.setItem('spesaSmartStateV9', JSON.stringify(appState));
             if (isSyncing && firebaseRef) {
                 firebaseRef.set(appState);
             }
         }
 
         function loadLocalState() {
-            const saved = localStorage.getItem('spesaSmartStateV8');
+            const saved = localStorage.getItem('spesaSmartStateV9') || localStorage.getItem('spesaSmartStateV8');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -782,7 +782,7 @@
 
             const categories = Object.keys(MACRO_META);
 
-            // Render "Da Acquistare"
+            // Render "Reparti - Da Acquistare"
             let hasPending = false;
             categories.forEach(catName => {
                 const catItems = pendingItems.filter(i => (i.category || 'Dispensa & Colazione') === catName);
@@ -847,12 +847,16 @@
                 pendingContainer.innerHTML = `<div class="bg-white rounded-2xl p-4 text-center text-xs text-slate-400 border border-slate-100">La lista da acquistare è vuota.</div>`;
             }
 
-            // Render "Nel Carrello"
+            // Render "Reparti - Nel Carrello"
             let hasCart = false;
             categories.forEach(catName => {
                 const catItems = cartItems.filter(i => (i.category || 'Dispensa & Colazione') === catName);
                 if (catItems.length === 0) return;
                 hasCart = true;
+
+                const isExpanded = appState.expandedCategories[catName] !== false;
+                let catTotal = 0;
+                catItems.forEach(i => catTotal += calculateItemSubtotal(i));
 
                 let itemsHtml = catItems.map(item => {
                     const subtotal = calculateItemSubtotal(item);
@@ -863,7 +867,7 @@
                             <div class="flex items-center gap-3 w-full sm:w-auto flex-1 min-w-0">
                                 <input type="checkbox" checked onchange="toggleItemCheck('${item.id}')"
                                        class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
-                                <span class="text-xs font-semibold text-slate-400 line-through break-words leading-snug flex-1">${item.name}</span>
+                                <span class="text-xs font-semibold text-slate-500 line-through break-words leading-snug flex-1">${item.name}</span>
                             </div>
                             <div class="flex items-center justify-between w-full sm:w-auto gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                                 ${userDetails
@@ -880,8 +884,8 @@
                 }).join('');
 
                 cartContainer.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden opacity-85">
-                        <div class="p-3.5 bg-slate-50/70 flex justify-between items-center border-b border-slate-100">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden opacity-90">
+                        <div class="p-3.5 bg-slate-50/70 flex justify-between items-center cursor-pointer select-none border-b border-slate-100" onclick="toggleCategory('${catName}')">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
                                     <i class="fa-solid ${MACRO_META[catName].icon}"></i>
@@ -891,8 +895,12 @@
                                     <p class="text-[10px] text-slate-400">${catItems.length} nel carrello</p>
                                 </div>
                             </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-slate-500">€ ${catTotal.toFixed(2)}</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}"></i>
+                            </div>
                         </div>
-                        <div class="px-2">
+                        <div class="px-2 ${isExpanded ? 'block' : 'hidden'}">
                             ${itemsHtml}
                         </div>
                     </div>
@@ -936,6 +944,9 @@
             const item = appState.items.find(i => i.id === itemId);
             if (item) {
                 item.checked = !item.checked;
+                if (item.category) {
+                    appState.expandedCategories[item.category] = true;
+                }
                 saveLocalState();
                 renderApp();
             }
@@ -1091,7 +1102,7 @@
         function initFirebase(url, room) {
             try {
                 if (!firebase.apps.length) firebase.initializeApp({ databaseURL: url });
-                firebaseRef = firebase.database().ref('spesasmart_v8/' + room);
+                firebaseRef = firebase.database().ref('spesasmart_v9/' + room);
                 firebaseRef.on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data && Array.isArray(data.items)) {
