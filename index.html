@@ -928,7 +928,7 @@
         }
 
         function disconnectFirebase() {
-            localStorage.removeItem('spesSmartFirebaseUrl');
+            localStorage.removeItem('spesaSmartFirebaseUrl');
             localStorage.removeItem('spesaSmartFirebaseRoom');
             if (firebaseRef) firebaseRef.off();
             firebaseRef = null;
@@ -951,7 +951,7 @@
             XLSX.writeFile(wb, "Modello_SpesaSmart.xlsx");
         }
 
-function handleFileImport(e) {
+        function handleFileImport(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
